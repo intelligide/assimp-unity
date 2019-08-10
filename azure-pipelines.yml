@@ -62,7 +62,7 @@ stages:
               configuration: '$(buildConfiguration)'
 
           - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
-            artifact: assimpnet
+            artifact: assimp_net
 
       - job: build_assimp_win
         displayName: Assimp for Windows
@@ -296,7 +296,7 @@ stages:
           - task: CopyFiles@2
             displayName: Copy AssimpNet
             inputs:
-              sourceFolder: $(Pipeline.Workspace)/assimpnet/netstandard2.0
+              sourceFolder: $(Pipeline.Workspace)/assimp_net/netstandard2.0
               targetFolder: $(build.SourcesDirectory)/$(package_folder)
               contents: AssimpNet.dll
 
