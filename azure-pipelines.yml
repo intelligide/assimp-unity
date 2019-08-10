@@ -1,0 +1,247 @@
+trigger:
+  - master
+
+variables:
+  version: 4.1.0
+
+stages:
+
+########################################################################################################################
+## Build
+########################################################################################################################
+
+  - stage: Build
+    jobs:
+      - job: assimpnet
+        displayName: AssimpNet  
+        pool:
+          vmImage: 'windows-latest'
+        variables:
+          solution: '**/*.sln'
+          buildPlatform: 'Any CPU'
+          buildConfiguration: 'Release'
+        steps:
+          - checkout: none
+
+          - bash: git clone https://github.com/intelligide/assimpnet-unity assimpnet && cd assimpnet
+            displayName: Download AssimpNet sources
+
+          - task: NuGetToolInstaller@1
+            displayName: Nuget installation
+
+          - task: NuGetCommand@2
+            displayName: Restore solution
+            inputs:
+              restoreSolution: '$(solution)'
+
+          - task: VSBuild@1
+            displayName: Build AssimpNet
+            inputs:
+              solution: '$(solution)'
+              platform: '$(buildPlatform)'
+              configuration: '$(buildConfiguration)'
+
+          - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
+            artifact: AssimpNet
+
+      - job: assimp_win
+        displayName: Assimp for Windows
+        strategy:
+          matrix:
+            x86_64:
+              GENERATOR_ARCH: x64
+              BUILD_ARCH: x64
+            x86:
+              GENERATOR_ARCH: Win32
+              BUILD_ARCH: x86
+        pool:
+          vmImage: 'vs2017-win2016'
+        steps:
+          - checkout: none
+
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+            displayName: Download Assimp sources
+
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder: 
+              cleanDestinationFolder: false
+          
+          - task: CMake@1
+            displayName: Configure Assimp
+            inputs:
+              workingDirectory: assimp-$(version)
+              cmakeArgs: -G "Visual Studio 15 2017" -A $(GENERATOR_ARCH) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
+                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+
+          - task: MSBuild@1
+            displayName: Build Assimp
+            inputs:
+              solution: assimp-$(version)/Assimp.sln
+              msbuildArchitecture: $(BUILD_ARCH)
+              configuration: MinSizeRel
+
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/bin/MinSizeRel
+            artifact: assimp_win_$(BUILD_ARCH)
+
+      - job: assimp_linux
+        displayName: Assimp for Linux
+        strategy:
+          matrix:
+            x86_64: 
+              ARCH: x64
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: none
+
+          - bash: sudo apt-get update -yqq && sudo apt install -y ninja-build
+            displayName: Install Ninja
+
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+            displayName: Download Assimp sources
+
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder: 
+              cleanDestinationFolder: false
+          
+          - task: CMake@1
+            displayName: Configure Assimp
+            inputs:
+              workingDirectory: assimp-$(version)
+              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON
+                -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+          
+          - bash: cd assimp-$(version) && ninja
+            displayName: Build Assimp
+
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib
+            artifact: assimp_linux_$(ARCH)
+
+      - job: assimp_android
+        displayName: Assimp for Android
+        strategy:
+          matrix:
+            armv7:
+              ABI: armeabi-v7a
+            arm64:
+              ABI: arm64-v8a
+            x86:
+              ABI: x86
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: none
+
+          - bash: sudo apt-get update -yqq && sudo apt install -y ninja-build
+            displayName: Install Ninja
+
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+            displayName: Download Assimp sources
+
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder: 
+              cleanDestinationFolder: false
+          
+          - task: CMake@1
+            displayName: Configure Assimp
+            inputs:
+              workingDirectory: assimp-$(version)
+              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=$(ABI) -DASSIMP_BUILD_TESTS=OFF
+                -DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake
+                -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON 
+                -DASSIMP_ANDROID_JNIIOSYSTEM=ON
+          
+          - bash: cd assimp-$(version) && ninja
+            displayName: Build Assimp
+
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib/
+            artifact: assimp_android_$(ABI)
+
+      - job: assimp_macos_x86_64
+        displayName: Assimp for Mac OS X x86_64
+        pool:
+          vmImage: 'macOS-latest'
+        steps:
+          - checkout: none
+
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+            displayName: Download Assimp sources
+
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder: 
+              cleanDestinationFolder: false
+          
+          - task: CMake@1
+            displayName: Configure Assimp
+            inputs:
+              workingDirectory: assimp-$(version)
+              cmakeArgs: -G Xcode -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
+                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON  -DBUILD_SHARED_LIBS=ON
+
+          - task: Xcode@5
+            inputs:
+              packageApp: false
+              workingDirectory: assimp-$(version)
+              scheme: ALL_BUILD
+              configuration: MinSizeRel
+              sdk: macosx10.14
+
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib/MinSizeRel
+            artifact: assimp_macos_x86_64
+
+      - job: assimp_ios
+        displayName: Assimp for iOS
+        pool:
+          vmImage: 'macOS-latest'
+        steps:
+          - checkout: none
+
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+            displayName: Download Assimp sources
+
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder: 
+              cleanDestinationFolder: false
+
+          - bash: cd assimp-$(version)/port/iOS && 
+              ./build.sh --archs="armv7 arm64 x86_64" --stdlib=libc++ --no-fat --std=c++14
+            displayName: Build Assimp
+
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib/iOS
+            artifact: assimp_ios
+
+########################################################################################################################
+## Packaging
+########################################################################################################################
+
+  - stage: Packaging
+    jobs:
+      - job: packaging
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - download: current
+
+          - bash: ls -la $(Pipeline.Workspace)
+
+          # - task: Npm@1
+          #   displayName: Publishing package
+          #   inputs:
+          #     command: publish
+          #     publishRegistry: useFeed
+          #     publishFeed: https://intelligide.pkgs.visualstudio.com/_packaging/intelligide/npm/registry/
