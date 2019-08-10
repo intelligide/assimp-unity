@@ -2,18 +2,37 @@ trigger:
   - master
 
 variables:
-  version: 4.1.0
+  assimp_version: 4.1.0
 
 stages:
+  # - stage: check
+  #   displayName: Check
+  #   jobs:
+  #     - job: check_docs
+  #       displayName: Docs
+  #       pool:
+  #         vmImage: 'ubuntu-latest'
+  #       steps:
+  #         - task: Docker@0
+  #           displayName: Check Gemfile lock
+  #           inputs:
+  #             containerRegistryType: 'Container Registry'
+  #             action: 'Run an image'
+  #             imageName: 'jekyll/jekyll:latest'
+  #             volumes: |
+  #               $(build.sourcesDirectory)/docs:/srv/jekyll
+  #             containerCommand: "bash -c \"bundle update --frozen\"" # Cannot pass '--' args
+  #             detached: false
 
 ########################################################################################################################
 ## Build
 ########################################################################################################################
 
-  - stage: Build
+  - stage: build
+    displayName: Build
     jobs:
-      - job: assimpnet
-        displayName: AssimpNet  
+      - job: build_assimpnet
+        displayName: AssimpNet
         pool:
           vmImage: 'windows-latest'
         variables:
@@ -44,7 +63,7 @@ stages:
           - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
             artifact: AssimpNet
 
-      - job: assimp_win
+      - job: build_assimp_win
         displayName: Assimp for Windows
         strategy:
           matrix:
@@ -59,38 +78,38 @@ stages:
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
             displayName: Extract Assimp sources
             inputs:
               archiveFilePatterns: "assimp.zip"
-              destinationFolder: 
+              destinationFolder:
               cleanDestinationFolder: false
-          
+
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(version)
+              workingDirectory: assimp-$(assimp_version)
               cmakeArgs: -G "Visual Studio 15 2017" -A $(GENERATOR_ARCH) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
                 -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
 
           - task: MSBuild@1
             displayName: Build Assimp
             inputs:
-              solution: assimp-$(version)/Assimp.sln
+              solution: assimp-$(assimp_version)/Assimp.sln
               msbuildArchitecture: $(BUILD_ARCH)
               configuration: MinSizeRel
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/bin/MinSizeRel
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/bin/MinSizeRel
             artifact: assimp_win_$(BUILD_ARCH)
 
-      - job: assimp_linux
+      - job: build_assimp_linux
         displayName: Assimp for Linux
         strategy:
           matrix:
-            x86_64: 
+            x86_64:
               ARCH: x64
         pool:
           vmImage: 'ubuntu-latest'
@@ -100,39 +119,39 @@ stages:
           - bash: sudo apt-get update -yqq && sudo apt install -y ninja-build
             displayName: Install Ninja
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
             displayName: Extract Assimp sources
             inputs:
               archiveFilePatterns: "assimp.zip"
-              destinationFolder: 
+              destinationFolder:
               cleanDestinationFolder: false
-          
+
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(version)
+              workingDirectory: assimp-$(assimp_version)
               cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON
                 -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
-          
-          - bash: cd assimp-$(version) && ninja
+
+          - bash: cd assimp-$(assimp_version) && ninja
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib
             artifact: assimp_linux_$(ARCH)
 
-      - job: assimp_android
+      - job: build_assimp_android
         displayName: Assimp for Android
         strategy:
           matrix:
             armv7:
-              ABI: armeabi-v7a
+              android_abi: armeabi-v7a
             arm64:
-              ABI: arm64-v8a
+              android_abi: arm64-v8a
             x86:
-              ABI: x86
+              android_abi: x86
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -141,95 +160,123 @@ stages:
           - bash: sudo apt-get update -yqq && sudo apt install -y ninja-build
             displayName: Install Ninja
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
             displayName: Extract Assimp sources
             inputs:
               archiveFilePatterns: "assimp.zip"
-              destinationFolder: 
+              destinationFolder:
               cleanDestinationFolder: false
-          
+
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(version)
-              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=$(ABI) -DASSIMP_BUILD_TESTS=OFF
+              workingDirectory: assimp-$(assimp_version)
+              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=$(android_abi)
+                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
                 -DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake
-                -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON 
-                -DASSIMP_ANDROID_JNIIOSYSTEM=ON
-          
-          - bash: cd assimp-$(version) && ninja
+                -DASSIMP_NO_EXPORT=ON -DBUILD_SHARED_LIBS=ON
+
+          - bash: cd assimp-$(assimp_version) && ninja
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib/
-            artifact: assimp_android_$(ABI)
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/
+            artifact: assimp_android_$(android_abi)
 
-      - job: assimp_macos_x86_64
+      - job: build_assimp_macos_x86_64
         displayName: Assimp for Mac OS X x86_64
         pool:
           vmImage: 'macOS-latest'
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
             displayName: Extract Assimp sources
             inputs:
               archiveFilePatterns: "assimp.zip"
-              destinationFolder: 
+              destinationFolder:
               cleanDestinationFolder: false
-          
+
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(version)
+              workingDirectory: assimp-$(assimp_version)
               cmakeArgs: -G Xcode -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
                 -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON  -DBUILD_SHARED_LIBS=ON
 
           - task: Xcode@5
             inputs:
               packageApp: false
-              workingDirectory: assimp-$(version)
+              workingDirectory: assimp-$(assimp_version)
               scheme: ALL_BUILD
               configuration: MinSizeRel
               sdk: macosx10.14
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib/MinSizeRel
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/MinSizeRel
             artifact: assimp_macos_x86_64
 
-      - job: assimp_ios
+      - job: build_assimp_ios
         displayName: Assimp for iOS
         pool:
           vmImage: 'macOS-latest'
+        variables:
+          ios_archs: "armv7 arm64 x86_64"
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
             displayName: Extract Assimp sources
             inputs:
               archiveFilePatterns: "assimp.zip"
-              destinationFolder: 
+              destinationFolder:
               cleanDestinationFolder: false
 
-          - bash: cd assimp-$(version)/port/iOS && 
-              ./build.sh --archs="armv7 arm64 x86_64" --stdlib=libc++ --no-fat --std=c++14
+          - bash: cd assimp-$(assimp_version)/port/iOS &&
+              ./build.sh --archs="$(ios_archs)" --stdlib=libc++ --no-fat --std=c++14
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(version)/lib/iOS
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/iOS
             artifact: assimp_ios
+
+      ## Docs
+      - job: build_docs
+        displayName: Docs
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UseRubyVersion@0
+            inputs:
+              versionSpec: '>= 2.4'
+
+          - script: gem install bundler
+            displayName: Install bundler
+            workingDirectory: $(build.SourcesDirectory)/docs
+
+          - script: bundle install
+            displayName: Install deps
+            workingDirectory: $(build.SourcesDirectory)/docs
+
+          - script: bundle exec jekyll build -d $(build.binariesDirectory)/_site
+            displayName: Build docs with Jekyll
+            workingDirectory: $(build.SourcesDirectory)/docs
+
+          - publish: $(build.binariesDirectory)/_site
+            artifact: docs
 
 ########################################################################################################################
 ## Packaging
 ########################################################################################################################
 
-  - stage: Packaging
+  - stage: packaging
+    displayName: Packaging
     jobs:
       - job: packaging
         pool:

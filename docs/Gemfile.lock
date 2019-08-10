@@ -252,7 +252,6 @@ PLATFORMS
 DEPENDENCIES
   github-pages
   just-the-docs (~> 0.2)
-  minima (~> 2.0)
   tzinfo-data
   wdm (~> 0.1.0)
 
