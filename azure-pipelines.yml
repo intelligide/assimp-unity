@@ -5,6 +5,12 @@ variables:
   assimp_version: 4.1.0
   package_folder: com.arsenstudio.assimp
 
+  windows_enabled: true
+  macosx_enabled: true
+  linux_enabled: true
+  ios_enabled: true
+  android_enabled: true
+
 stages:
   # - stage: check
   #   displayName: Check
@@ -66,6 +72,7 @@ stages:
 
       - job: build_assimp_win
         displayName: Assimp for Windows
+        condition: eq('${{ windows_enabled }}', 'true')
         strategy:
           matrix:
             x86_64:
@@ -108,6 +115,7 @@ stages:
 
       - job: build_assimp_linux
         displayName: Assimp for Linux
+        condition: eq('${{ linux_enabled }}', 'true')
         strategy:
           matrix:
             x86_64:
@@ -145,6 +153,7 @@ stages:
 
       - job: build_assimp_android
         displayName: Assimp for Android
+        condition: eq('${{ android_enabled }}', 'true')
         strategy:
           matrix:
             armv7:
@@ -188,6 +197,7 @@ stages:
 
       - job: build_assimp_macos_x86_64
         displayName: Assimp for Mac OS X x86_64
+        condition: eq('${{ macosx_enabled }}', 'true')
         pool:
           vmImage: 'macOS-latest'
         steps:
@@ -223,6 +233,7 @@ stages:
 
       - job: build_assimp_ios
         displayName: Assimp for iOS
+        condition: eq('${{ ios_enabled }}', 'true')
         pool:
           vmImage: 'macOS-latest'
         variables:
@@ -305,33 +316,42 @@ stages:
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_win_x64/assimp-vc140-mt.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86_64/assimp.dll
             displayName: Install Assimp for Windows x64
+            condition: eq('${{ windows_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_win_x86/assimp-vc140-mt.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86/assimp.dll
-            displayName: Install Assimp for Windows x86
+            condition: eq('${{ windows_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_linux_x64/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/linux/x86_64/libassimp.so
             displayName: Install Assimp for Linux x86_64
+            condition: eq('${{ linux_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_macos_x86_64/libassimp.dylib $(build.SourcesDirectory)/$(package_folder)/Plugins/osx/x86_64/libassimp.dylib
             displayName: Install Assimp for Mac OS X x86_64
+            condition: eq('${{ macosx_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_armeabi-v7a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/armv7/libassimp.so
             displayName: Install Assimp for Android armv7
+            condition: eq('${{ android_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_arm64-v8a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/arm64/libassimp.so
             displayName: Install Assimp for Android arm64
+            condition: eq('${{ android_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_x86/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/x86/libassimp.so
             displayName: Install Assimp for Android x86
+            condition: eq('${{ android_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/armv7/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/armv7/libassimp.a
             displayName: Install Assimp for iOS armv7
+            condition: eq('${{ ios_enabled }}', 'true')
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/arm64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/arm64/libassimp.a
             displayName: Install Assimp for iOS arm64
+            condition: eq('${{ ios_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/x86_64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/x86_64/libassimp.a
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/x86_64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/x64/libassimp.a
             displayName: Install Assimp for iOS x86_64
+            condition: eq('${{ ios_enabled }}', 'true')
 
           - task: DeleteFiles@1
             inputs:
@@ -341,10 +361,10 @@ stages:
           - publish: $(build.SourcesDirectory)/$(package_folder)
             artifact: final
 
-          # - task: Npm@1
-          #   displayName: Publishing package
-          #   inputs:
-          #     workingDir: $(package_folder)
-          #     command: publish
-          #     publishRegistry: useFeed
-          #     publishFeed: https://intelligide.pkgs.visualstudio.com/_packaging/intelligide/npm/registry/
+          - task: Npm@1
+            displayName: Publishing package
+            inputs:
+              workingDir: $(build.SourcesDirectory)/$(package_folder)
+              command: publish
+              publishRegistry: useFeed
+              publishFeed: intelligide
