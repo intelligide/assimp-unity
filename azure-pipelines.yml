@@ -300,16 +300,6 @@ stages:
               targetFolder: $(build.SourcesDirectory)/$(package_folder)
               contents: AssimpNet.dll
 
-          # - task: UsePythonVersion@0
-          #   inputs:
-          #     versionSpec: '3.x'
-
-          # - task: PythonScript@0
-          #   inputs:
-          #     scriptSource: 'filePath'
-          #     scriptPath: package.py
-          #     arguments: $(Pipeline.Workspace)
-
           - task: Npm@1
             displayName: Publishing package
             inputs:
