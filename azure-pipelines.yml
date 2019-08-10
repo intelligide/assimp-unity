@@ -62,7 +62,7 @@ stages:
               configuration: '$(buildConfiguration)'
 
           - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
-            artifact: AssimpNet
+            artifact: assimpnet
 
       - job: build_assimp_win
         displayName: Assimp for Windows
