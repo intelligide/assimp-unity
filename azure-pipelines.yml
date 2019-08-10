@@ -3,6 +3,7 @@ trigger:
 
 variables:
   assimp_version: 4.1.0
+  package_folder: com.arsenstudio.assimp
 
 stages:
   # - stage: check
@@ -286,9 +287,33 @@ stages:
 
           - bash: ls -la $(Pipeline.Workspace)
 
-          # - task: Npm@1
-          #   displayName: Publishing package
+          - task: CopyFiles@2
+            displayName: Copy docs
+            inputs:
+              sourceFolder: $(Pipeline.Workspace)/docs
+              targetFolder: $(build.SourcesDirectory)/$(package_folder)/Documentation~
+
+          - task: CopyFiles@2
+            displayName: Copy AssimpNet
+            inputs:
+              sourceFolder: $(Pipeline.Workspace)/assimpnet/netstandard2.0
+              targetFolder: $(build.SourcesDirectory)/$(package_folder)
+              contents: AssimpNet.dll
+
+          # - task: UsePythonVersion@0
           #   inputs:
-          #     command: publish
-          #     publishRegistry: useFeed
-          #     publishFeed: https://intelligide.pkgs.visualstudio.com/_packaging/intelligide/npm/registry/
+          #     versionSpec: '3.x'
+
+          # - task: PythonScript@0
+          #   inputs:
+          #     scriptSource: 'filePath'
+          #     scriptPath: package.py
+          #     arguments: $(Pipeline.Workspace)
+
+          - task: Npm@1
+            displayName: Publishing package
+            inputs:
+              workingDir: $(package_folder)
+              command: publish
+              publishRegistry: useFeed
+              publishFeed: https://intelligide.pkgs.visualstudio.com/_packaging/intelligide/npm/registry/
