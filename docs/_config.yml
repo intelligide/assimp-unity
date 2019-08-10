@@ -21,6 +21,7 @@ description: >- # this means to ignore newlines until "baseurl:"
 
 permalink: pretty
 theme: just-the-docs
+remote_theme: pmarsceill/just-the-docs
 
 search_enabled: true
 
