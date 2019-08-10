@@ -300,10 +300,51 @@ stages:
               targetFolder: $(build.SourcesDirectory)/$(package_folder)
               contents: AssimpNet.dll
 
-          - task: Npm@1
-            displayName: Publishing package
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_net/netstandard2.0/AssimpNet.dll $(build.SourcesDirectory)/$(package_folder)/AssimpNet.dll
+            displayName: Install AssimpNet
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_win_x64/assimp-vc140-mt.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86_64/assimp.dll
+            displayName: Install Assimp for Windows x64
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_win_x86/assimp-vc140-mt.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86/assimp.dll
+            displayName: Install Assimp for Windows x86
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_linux_x64/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/linux/x86_64/libassimp.so
+            displayName: Install Assimp for Linux x86_64
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_macos_x86_64/libassimp.dylib $(build.SourcesDirectory)/$(package_folder)/Plugins/osx/x86_64/libassimp.dylib
+            displayName: Install Assimp for Mac OS X x86_64
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_armeabi-v7a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/armv7/libassimp.so
+            displayName: Install Assimp for Android armv7
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_arme64-v8a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/arm64/libassimp.so
+            displayName: Install Assimp for Android arm64
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_x86/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/x86/libassimp.so
+            displayName: Install Assimp for Android x86
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/armv7/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/armv7/libassimp.a
+            displayName: Install Assimp for iOS armv7
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/arm64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/arm64/libassimp.a
+            displayName: Install Assimp for iOS arm64
+
+          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/x86_64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/x86_64/libassimp.a
+            displayName: Install Assimp for iOS x86_64
+
+          - task: DeleteFiles@1
             inputs:
-              workingDir: $(package_folder)
-              command: publish
-              publishRegistry: useFeed
-              publishFeed: https://intelligide.pkgs.visualstudio.com/_packaging/intelligide/npm/registry/
+              sourceFolder: $(build.SourcesDirectory)/$(package_folder)
+              contents: "**/.gitkeep"
+
+          - publish: $(build.SourcesDirectory)/$(package_folder)
+            artifact: final
+
+          # - task: Npm@1
+          #   displayName: Publishing package
+          #   inputs:
+          #     workingDir: $(package_folder)
+          #     command: publish
+          #     publishRegistry: useFeed
+          #     publishFeed: https://intelligide.pkgs.visualstudio.com/_packaging/intelligide/npm/registry/
