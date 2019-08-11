@@ -4,6 +4,7 @@ trigger:
 variables:
   assimp_version: 4.1.0
   package_folder: com.arsenstudio.assimp
+  publish_feed: stable
 
   windows_enabled: true
   macosx_enabled: true
@@ -358,4 +359,4 @@ stages:
               workingDir: $(build.SourcesDirectory)/$(package_folder)
               command: publish
               publishRegistry: useFeed
-              publishFeed: stable
+              publishFeed: $(publish_feed)
