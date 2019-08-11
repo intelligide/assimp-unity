@@ -4,5 +4,6 @@
   "displayName": "AssimpNet",
   "unity": "2018.1",
   "description": "Assimp for C#/Unity",
-  "dependencies": {}
+  "dependencies": {},
+  "type": "library"
 }
