@@ -358,5 +358,5 @@ stages:
             inputs:
               workingDir: $(build.SourcesDirectory)/$(package_folder)
               command: publish
-              publishRegistry: useFeed
-              publishFeed: $(publish_feed)
+              publishRegistry: useExternalRegistry
+              publishEndpoint: stable_feed
