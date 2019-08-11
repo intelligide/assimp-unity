@@ -358,4 +358,4 @@ stages:
               workingDir: $(build.SourcesDirectory)/$(package_folder)
               command: publish
               publishRegistry: useFeed
-              publishFeed: public
+              publishFeed: stable
