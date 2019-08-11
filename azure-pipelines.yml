@@ -296,20 +296,11 @@ stages:
         steps:
           - download: current
 
-          - bash: ls -la $(Pipeline.Workspace)
-
           - task: CopyFiles@2
             displayName: Copy docs
             inputs:
               sourceFolder: $(Pipeline.Workspace)/docs
               targetFolder: $(build.SourcesDirectory)/$(package_folder)/Documentation~
-
-          - task: CopyFiles@2
-            displayName: Copy AssimpNet
-            inputs:
-              sourceFolder: $(Pipeline.Workspace)/assimp_net/netstandard2.0
-              targetFolder: $(build.SourcesDirectory)/$(package_folder)
-              contents: AssimpNet.dll
 
           - script: yes | cp -f $(Pipeline.Workspace)/assimp_net/netstandard2.0/AssimpNet.dll $(build.SourcesDirectory)/$(package_folder)/AssimpNet.dll
             displayName: Install AssimpNet
@@ -359,7 +350,7 @@ stages:
               contents: "**/.gitkeep"
 
           - publish: $(build.SourcesDirectory)/$(package_folder)
-            artifact: final
+            artifact: final_package
 
           - task: Npm@1
             displayName: Publishing package
@@ -367,4 +358,4 @@ stages:
               workingDir: $(build.SourcesDirectory)/$(package_folder)
               command: publish
               publishRegistry: useFeed
-              publishFeed: intelligide
+              publishFeed: public
