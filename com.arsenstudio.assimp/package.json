@@ -4,6 +4,10 @@
   "displayName": "AssimpNet",
   "unity": "2018.1",
   "description": "Assimp for C#/Unity",
-  "dependencies": {},
-  "type": "library"
+  "type": "library",
+  "keywords": ["assimp", "mesh importer"],
+  "author": {
+    "name": "Yoann Potinet"
+  },
+  "dependencies": {}
 }
