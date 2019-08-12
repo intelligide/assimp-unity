@@ -346,6 +346,12 @@ stages:
             displayName: Install Assimp for iOS x86_64
             condition: eq('${{ variables.ios_enabled }}', 'true')
 
+          - script: yes | cp -f $(build.SourcesDirectory)/README.md $(build.SourcesDirectory)/$(package_folder)/README.md
+            displayName: Copy README
+
+          - script: yes | cp -f $(build.SourcesDirectory)/LICENSE.md $(build.SourcesDirectory)/$(package_folder)/LICENSE.md
+            displayName: Copy License
+
           - task: DeleteFiles@1
             inputs:
               sourceFolder: $(build.SourcesDirectory)/$(package_folder)
