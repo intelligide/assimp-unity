@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Accepted File Formats
-nav_order: 2
+title: Installation
+nav_order: 1
 ---
 
 # {{ page.title }}
@@ -33,7 +33,7 @@ nav_order: 2
    ...
    ```
 
-2. z
+2. Add the dependency:
 
    ```json
    "dependencies": {

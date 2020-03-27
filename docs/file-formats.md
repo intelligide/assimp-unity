@@ -7,9 +7,6 @@ nav_order: 2
 # {{ page.title }}
 {: .no_toc }
 
-Just the Docs has some specific configuration parameters that can be defined in your Jekyll site's _config.yml file.
-{: .fs-6 .fw-300 }
-
 ## Table of contents
 {: .no_toc .text-delta }
 
@@ -18,9 +15,9 @@ Just the Docs has some specific configuration parameters that can be defined in 
 
 ---
 
-## 3D files
+***An asterisk indicates limited support***
 
-### Common interchange formats
+## Common interchange formats
 
 * Autodesk ( .fbx )
 * Collada ( .dae )
@@ -42,18 +39,18 @@ Just the Docs has some specific configuration parameters that can be defined in 
 * Milkshape 3D ( .ms3d )
 * *TrueSpace ( .cob,.scn )
 
-### Motion capture formats
+## Motion capture formats
 
 * Biovision BVH ( .bvh )
 * *CharacterStudio Motion ( .csm )
 
-### Graphics engine formats
+## Graphics engine formats
 
 * Ogre XML ( .xml )
 * Irrlicht Mesh ( .irrmesh )
 * *Irrlicht Scene ( .irr )
 
-### Game formats
+## Game formats
 
 * Quake I ( .mdl )
 * Quake II ( .md2 )
@@ -65,7 +62,7 @@ Just the Docs has some specific configuration parameters that can be defined in 
 * *Open Game Engine Exchange ( .ogex )
 * *Unreal ( .3d )
 
-### Other 3D formats
+## Other 3D formats
 
 * BlitzBasic 3D ( .b3d )
 * Quick3D ( .q3d,.q3s )
@@ -78,4 +75,4 @@ Just the Docs has some specific configuration parameters that can be defined in 
 * 3D GameStudio (3DGS) Terrain ( .hmp )
 * Izware Nendo ( .ndo )
 
-## 2D files
+
