@@ -25,6 +25,10 @@ remote_theme: pmarsceill/just-the-docs
 
 search_enabled: true
 
+aux_links:
+  "See on GitHub":
+    - "//github.com/intelligide/assimp-unity"
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.

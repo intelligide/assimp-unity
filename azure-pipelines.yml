@@ -348,7 +348,7 @@ stages:
 ## Publishing
 ########################################################################################################################
 
-  - stage: packaging
+  - stage: publishing
     displayName: Publishing
     jobs:
       - job: Publishing
