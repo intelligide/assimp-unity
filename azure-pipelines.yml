@@ -1,5 +1,7 @@
 trigger:
   - master
+  - develop
+  - release/*
 
 variables:
   assimp_version: 4.1.0
@@ -13,24 +15,6 @@ variables:
   android_enabled: true
 
 stages:
-  # - stage: check
-  #   displayName: Check
-  #   jobs:
-  #     - job: check_docs
-  #       displayName: Docs
-  #       pool:
-  #         vmImage: 'ubuntu-latest'
-  #       steps:
-  #         - task: Docker@0
-  #           displayName: Check Gemfile lock
-  #           inputs:
-  #             containerRegistryType: 'Container Registry'
-  #             action: 'Run an image'
-  #             imageName: 'jekyll/jekyll:latest'
-  #             volumes: |
-  #               $(build.sourcesDirectory)/docs:/srv/jekyll
-  #             containerCommand: "bash -c \"bundle update --frozen\"" # Cannot pass '--' args
-  #             detached: false
 
 ########################################################################################################################
 ## Build
@@ -200,7 +184,7 @@ stages:
         displayName: Assimp for Mac OS X x86_64
         condition: eq('${{ variables.macosx_enabled }}', 'true')
         pool:
-          vmImage: 'macOS-latest'
+          vmImage: 'macOS-10.15'
         steps:
           - checkout: none
 
@@ -227,7 +211,7 @@ stages:
               workingDirectory: assimp-$(assimp_version)
               scheme: ALL_BUILD
               configuration: MinSizeRel
-              sdk: macosx10.14
+              sdk: macosx10.15
 
           - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/MinSizeRel
             artifact: assimp_macos_x86_64
@@ -360,10 +344,25 @@ stages:
           - publish: $(build.SourcesDirectory)/$(package_folder)
             artifact: final_package
 
+########################################################################################################################
+## Publishing
+########################################################################################################################
+
+  - stage: packaging
+    displayName: Publishing
+    jobs:
+      - job: Publishing
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - download: current
+            artifact: final_package
+
           - task: Npm@1
             displayName: Publishing package
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
             inputs:
               workingDir: $(build.SourcesDirectory)/$(package_folder)
               command: publish
-              publishRegistry: useExternalRegistry
-              publishEndpoint: stable_feed
+              publishRegistry: useFeed
+              publishFeed: $(System.TeamProjectId)/$(publish_feed)
