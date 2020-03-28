@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Installation
-nav_order: 1
+nav_order: 2
+permalink: /installation/
 ---
 
 # {{ page.title }}
@@ -17,13 +18,13 @@ nav_order: 1
 
 ## With Unity Package Manager
 
-1. Add the scoped repository into the `Packages/manifest.json`
+1. Add a scoped repository into the `Packages/manifest.json`
 
    ```json
    "scopedRegistries": [
      {
        "name": "Assimp",
-       "url": "https://pkgs.dev.azure.com/intelligide/Assimp for Unity/_packaging/public/npm/registry/",
+       "url": "https://intelligide.pkgs.visualstudio.com/0435f2bc-ce0a-4490-ac97-883fb250890d/_packaging/stable/npm/registry/",
        "scopes": [
          "com.arsenstudio.assimp"
        ]
@@ -44,3 +45,4 @@ nav_order: 1
    ```
 
 3. Let Unity fetch the package
+4. See [Usage](usage.md)

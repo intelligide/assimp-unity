@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Accepted File Formats
-nav_order: 2
+nav_order: 4
+permalink: /file-formats/
 ---
 
 # {{ page.title }}
