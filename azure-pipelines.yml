@@ -2,9 +2,10 @@ trigger:
   - master
   - develop
   - release/*
+  - feature/*
 
 variables:
-  assimp_version: 4.1.0
+  assimp_version: 5.0.1
   package_folder: com.arsenstudio.assimp
   publish_feed: stable
 
