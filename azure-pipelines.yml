@@ -351,6 +351,7 @@ stages:
 
   - stage: publishing
     displayName: Publishing
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - job: Publishing
         pool:
@@ -361,7 +362,6 @@ stages:
 
           - task: Npm@1
             displayName: Publishing package
-            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
             inputs:
               workingDir: $(build.SourcesDirectory)/$(package_folder)
               command: publish
