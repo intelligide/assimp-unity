@@ -277,6 +277,7 @@ stages:
     displayName: Packaging
     jobs:
       - job: packaging
+        displayName: Packaging
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -353,7 +354,8 @@ stages:
     displayName: Publishing
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
-      - job: Publishing
+      - job: publishing
+        displayName: Publishing
         pool:
           vmImage: 'ubuntu-latest'
         steps:
