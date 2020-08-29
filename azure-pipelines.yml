@@ -68,7 +68,7 @@ stages:
               GENERATOR_ARCH: Win32
               BUILD_ARCH: x86
         pool:
-          vmImage: 'vs2017-win2016'
+          vmImage: 'windows-2019'
         steps:
           - checkout: none
 
@@ -86,7 +86,7 @@ stages:
             displayName: Configure Assimp
             inputs:
               workingDirectory: assimp-$(assimp_version)
-              cmakeArgs: -G "Visual Studio 15 2017" -A $(GENERATOR_ARCH) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
+              cmakeArgs: -G "Visual Studio 16 2019" -A $(GENERATOR_ARCH) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
                 -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
                 -DLIBRARY_SUFFIX="" -DINJECT_DEBUG_POSTFIX=OFF
 
