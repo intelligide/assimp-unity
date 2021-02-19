@@ -37,7 +37,7 @@ stages:
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/intelligide/assimpnet-unity/archive/$(assimpNetVersion).tar.gz -o assimpnet.zip
+          - bash: curl -L https://github.com/intelligide/assimpnet-unity/archive/$(assimpNetVersion).zip -o assimpnet.zip
             displayName: Download AssimpNet sources
 
           - task: ExtractFiles@1
@@ -236,23 +236,17 @@ stages:
               cmakeArgs: -G Xcode -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
                 -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
-          - task: Xcode@5
+          - task: CMake@1
             displayName: Build Assimp
             inputs:
-              packageApp: false
               workingDirectory: assimp-$(assimpVersion)
-              scheme: ALL_BUILD
-              configuration: MinSizeRel
-              sdk: macosx11.1
+              cmakeArgs: --build . --config MinSizeRel
 
-          - task: Xcode@5
+          - task: CMake@1
             displayName: Install Assimp
             inputs:
-              packageApp: false
               workingDirectory: assimp-$(assimpVersion)
-              scheme: INSTALL
-              configuration: MinSizeRel
-              sdk: macosx11.1
+              cmakeArgs: --build . --target install --config MinSizeRel
 
           - publish: $(Build.BinariesDirectory)/lib
             artifact: Assimp-macOS-x86_64
@@ -299,7 +293,7 @@ stages:
         steps:
           - task: UseRubyVersion@0
             inputs:
-              versionSpec: '>= 2.4,<3'
+              versionSpec: '>= 2.4 <3.0'
 
           - script: gem install bundler
             displayName: Install bundler
