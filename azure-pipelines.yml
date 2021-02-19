@@ -6,7 +6,7 @@ trigger:
 
 variables:
   assimpVersion: 5.0.1
-  assimpNetVersion: 5.0.1
+  assimpNetVersion: 5.0.0-beta1
   package_folder: com.arsenstudio.assimp
   publish_feed: stable
 
@@ -103,19 +103,17 @@ stages:
                 -DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DLIBRARY_SUFFIX=""
                 -DINJECT_DEBUG_POSTFIX=OFF -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
-          - task: MSBuild@1
+          - task: CMake@1
             displayName: Build Assimp
             inputs:
-              solution: assimp-$(assimpVersion)/Assimp.sln
-              msbuildArchitecture: $(buildArch)
-              configuration: MinSizeRel
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --config MinSizeRel
 
-          - task: MSBuild@1
+          - task: CMake@1
             displayName: Install Assimp
             inputs:
-              solution: assimp-$(assimpVersion)/INSTALL.vcxproj
-              msbuildArchitecture: $(buildArch)
-              configuration: MinSizeRel
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --target install --config MinSizeRel
 
           - publish: $(Build.BinariesDirectory)/bin/assimp.dll
             artifact: Assimp-Win-$(buildArch)
@@ -153,11 +151,17 @@ stages:
               cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
                 -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
-          - bash: cd assimp-$(assimpVersion) && ninja
+          - task: CMake@1
             displayName: Build Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --config MinSizeRel
 
-          - bash: cd assimp-$(assimpVersion) && ninja install
+          - task: CMake@1
             displayName: Install Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --target install --config MinSizeRel
 
           - publish: $(Build.BinariesDirectory)/lib/libassimp.so
             artifact: Assimp-Linux-$(buildArch)
@@ -201,11 +205,17 @@ stages:
                 -DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake
                 -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
-          - bash: cd assimp-$(assimpVersion) && ninja
+          - task: CMake@1
             displayName: Build Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --config MinSizeRel
 
-          - bash: cd assimp-$(assimpVersion) && ninja install
+          - task: CMake@1
             displayName: Install Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --target install --config MinSizeRel
 
           - publish: $(Build.BinariesDirectory)/lib/libassimp.so
             artifact: Assimp-Android-$(androidABI)
@@ -248,7 +258,7 @@ stages:
               workingDirectory: assimp-$(assimpVersion)
               cmakeArgs: --build . --target install --config MinSizeRel
 
-          - publish: $(Build.BinariesDirectory)/lib
+          - publish: $(Build.BinariesDirectory)/lib/libassimp.dylib
             artifact: Assimp-macOS-x86_64
 
       ## iOS
@@ -330,46 +340,46 @@ stages:
               sourceFolder: $(Pipeline.Workspace)/docs
               targetFolder: $(build.SourcesDirectory)/$(package_folder)/Documentation~
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_net/netstandard2.0/AssimpNet.dll $(build.SourcesDirectory)/$(package_folder)/AssimpNet.dll
+          - script: yes | cp -f $(Pipeline.Workspace)/AssimpNet/netstandard2.0/AssimpNet.dll $(build.SourcesDirectory)/$(package_folder)/AssimpNet.dll
             displayName: Install AssimpNet
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_win_x64/assimp.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86_64/assimp.dll
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Win-x64/assimp.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86_64/assimp.dll
             displayName: Install Assimp for Windows x64
             condition: eq('${{ variables.windows_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_win_x86/assimp.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86/assimp.dll
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Win-x86/assimp.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86/assimp.dll
             displayName: Install Assimp for Windows x86
             condition: eq('${{ variables.windows_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_linux_x64/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/linux/x86_64/libassimp.so
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Linux-x64/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/linux/x86_64/libassimp.so
             displayName: Install Assimp for Linux x86_64
             condition: eq('${{ variables.linux_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_macos_x86_64/libassimp.dylib $(build.SourcesDirectory)/$(package_folder)/Plugins/osx/x86_64/libassimp.dylib
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-macOS-x86_64/libassimp.dylib $(build.SourcesDirectory)/$(package_folder)/Plugins/osx/x86_64/libassimp.dylib
             displayName: Install Assimp for Mac OS X x86_64
             condition: eq('${{ variables.macosx_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_armeabi-v7a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/armv7/libassimp.so
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Android-armeabi-v7a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/armv7/libassimp.so
             displayName: Install Assimp for Android armv7
             condition: eq('${{ variables.android_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_arm64-v8a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/arm64/libassimp.so
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Android-arm64-v8a/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/arm64/libassimp.so
             displayName: Install Assimp for Android arm64
             condition: eq('${{ variables.android_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_android_x86/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/x86/libassimp.so
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Android-x86/libassimp.so $(build.SourcesDirectory)/$(package_folder)/Plugins/android/x86/libassimp.so
             displayName: Install Assimp for Android x86
             condition: eq('${{ variables.android_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/armv7/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/armv7/libassimp.a
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-iOS-armv7/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/armv7/libassimp.a
             displayName: Install Assimp for iOS armv7
             condition: eq('${{ variables.ios_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/arm64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/arm64/libassimp.a
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-iOS-arm64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/arm64/libassimp.a
             displayName: Install Assimp for iOS arm64
             condition: eq('${{ variables.ios_enabled }}', 'true')
 
-          - script: yes | cp -f $(Pipeline.Workspace)/assimp_ios/x86_64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/x64/libassimp.a
+          - script: yes | cp -f $(Pipeline.Workspace)/Assimp-iOS-x86_64/libassimp.a $(build.SourcesDirectory)/$(package_folder)/Plugins/ios/x64/libassimp.a
             displayName: Install Assimp for iOS x86_64
             condition: eq('${{ variables.ios_enabled }}', 'true')
 
