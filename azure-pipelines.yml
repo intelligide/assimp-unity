@@ -47,23 +47,21 @@ stages:
               destinationFolder:
               cleanDestinationFolder: false
 
-          - bash: cd assimpnet-unity-$(assimpNetVersion)
-            displayName: Chnage directory to AssimpNet source directory
-
           - task: NuGetToolInstaller@1
             displayName: Nuget installation
 
           - task: NuGetCommand@2
             displayName: Restore solution
             inputs:
-              restoreSolution: '$(solution)'
+              command: restore
+              restoreSolution: assimpnet-unity-$(assimpNetVersion)/$(solution)
 
           - task: VSBuild@1
             displayName: Build AssimpNet
             inputs:
-              solution: '$(solution)'
-              platform: '$(buildPlatform)'
-              configuration: '$(buildConfiguration)'
+              solution: assimpnet-unity-$(assimpNetVersion)/$(solution)
+              platform: $(buildPlatform)
+              configuration: $(buildConfiguration)
 
           - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
             artifact: AssimpNet
