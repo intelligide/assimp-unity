@@ -63,7 +63,7 @@ stages:
               platform: $(buildPlatform)
               configuration: $(buildConfiguration)
 
-          - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
+          - publish: $(System.DefaultWorkingDirectory)/assimpnet-unity-$(assimpNetVersion)/AssimpNet/bin/Release
             artifact: AssimpNet
 
       ## Windows
