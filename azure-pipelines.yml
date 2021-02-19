@@ -31,7 +31,7 @@ stages:
         pool:
           vmImage: 'windows-latest'
         variables:
-          solution: '**/*.sln'
+          solution: 'AssimpNet.sln'
           buildPlatform: 'Any CPU'
           buildConfiguration: 'Release'
         steps:
@@ -41,9 +41,9 @@ stages:
             displayName: Download AssimpNet sources
 
           - task: ExtractFiles@1
-            displayName: Extract Assimp sources
+            displayName: Extract AssimpNet sources
             inputs:
-              archiveFilePatterns: "assimp.zip"
+              archiveFilePatterns: "assimpnet.zip"
               destinationFolder:
               cleanDestinationFolder: false
 
@@ -117,7 +117,7 @@ stages:
               msbuildArchitecture: $(buildArch)
               configuration: MinSizeRel
 
-          - publish: $(Build.BinariesDirectory)/bin
+          - publish: $(Build.BinariesDirectory)/bin/assimp.dll
             artifact: Assimp-Win-$(buildArch)
 
       ## Linux
@@ -159,7 +159,7 @@ stages:
           - bash: cd assimp-$(assimpVersion) && ninja install
             displayName: Install Assimp
 
-          - publish: $(Build.BinariesDirectory)/lib
+          - publish: $(Build.BinariesDirectory)/lib/libassimp.so
             artifact: Assimp-Linux-$(buildArch)
 
       ## Android
@@ -207,7 +207,7 @@ stages:
           - bash: cd assimp-$(assimpVersion) && ninja install
             displayName: Install Assimp
 
-          - publish: $(Build.BinariesDirectory)/lib
+          - publish: $(Build.BinariesDirectory)/lib/libassimp.so
             artifact: Assimp-Android-$(androidABI)
 
       ## macOS
@@ -243,7 +243,7 @@ stages:
               workingDirectory: assimp-$(assimpVersion)
               scheme: ALL_BUILD
               configuration: MinSizeRel
-              sdk: macosx10.15
+              sdk: macosx11.1
 
           - task: Xcode@5
             displayName: Install Assimp
@@ -252,7 +252,7 @@ stages:
               workingDirectory: assimp-$(assimpVersion)
               scheme: INSTALL
               configuration: MinSizeRel
-              sdk: macosx10.15
+              sdk: macosx11.1
 
           - publish: $(Build.BinariesDirectory)/lib
             artifact: Assimp-macOS-x86_64
@@ -293,7 +293,7 @@ stages:
         steps:
           - task: UseRubyVersion@0
             inputs:
-              versionSpec: '>= 2.4'
+              versionSpec: '>= 2.4,<3'
 
           - script: gem install bundler
             displayName: Install bundler
