@@ -29,7 +29,7 @@ stages:
       - job: build_assimpnet
         displayName: AssimpNet
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'windows-2019'
         variables:
           solution: 'AssimpNet.sln'
           buildPlatform: 'Any CPU'
@@ -63,8 +63,11 @@ stages:
               platform: $(buildPlatform)
               configuration: $(buildConfiguration)
 
-          - publish: $(System.DefaultWorkingDirectory)/assimpnet-unity-$(assimpNetVersion)/AssimpNet/bin/Release
-            artifact: AssimpNet
+          - publish: $(System.DefaultWorkingDirectory)/assimpnet-unity-$(assimpNetVersion)/AssimpNet/bin/Release/net4/AssimpNet.dll
+            artifact: AssimpNet-net4
+
+          - publish: $(System.DefaultWorkingDirectory)/assimpnet-unity-$(assimpNetVersion)/AssimpNet/bin/Release/netstandard1.3/AssimpNet.dll
+            artifact: AssimpNet-netstandard1.3
 
       ## Windows
       - job: build_assimp_win
@@ -125,7 +128,7 @@ stages:
             x86_64:
               buildArch: x64
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-20.04'
         steps:
           - checkout: none
 
@@ -177,7 +180,7 @@ stages:
             x86:
               androidABI: x86
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-20.04'
         steps:
           - checkout: none
 
@@ -264,7 +267,7 @@ stages:
         displayName: Assimp for iOS
         condition: eq('${{ variables.ios_enabled }}', 'true')
         pool:
-          vmImage: 'macOS-latest'
+          vmImage: 'macOS-10.15'
         strategy:
           matrix:
             armv7:
@@ -297,7 +300,7 @@ stages:
       - job: build_docs
         displayName: Docs
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-20.04'
         steps:
           - task: UseRubyVersion@0
             inputs:
@@ -328,17 +331,17 @@ stages:
       - job: packaging
         displayName: Packaging
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-20.04'
         steps:
           - download: current
 
           - task: CopyFiles@2
             displayName: Copy docs
             inputs:
-              sourceFolder: $(Pipeline.Workspace)/docs
+              sourceFolder: $(Pipeline.Workspace)/Docs
               targetFolder: $(build.SourcesDirectory)/$(package_folder)/Documentation~
 
-          - script: yes | cp -f $(Pipeline.Workspace)/AssimpNet/netstandard2.0/AssimpNet.dll $(build.SourcesDirectory)/$(package_folder)/AssimpNet.dll
+          - script: yes | cp -f $(Pipeline.Workspace)/AssimpNet-netstandard1.3/AssimpNet.dll $(build.SourcesDirectory)/$(package_folder)/AssimpNet.dll
             displayName: Install AssimpNet
 
           - script: yes | cp -f $(Pipeline.Workspace)/Assimp-Win-x64/assimp.dll $(build.SourcesDirectory)/$(package_folder)/Plugins/win/x86_64/assimp.dll
@@ -393,7 +396,7 @@ stages:
               contents: "**/.gitkeep"
 
           - publish: $(build.SourcesDirectory)/$(package_folder)
-            artifact: final_package
+            artifact: UnityPackage
 
 ########################################################################################################################
 ## Publishing
