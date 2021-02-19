@@ -263,8 +263,14 @@ stages:
         condition: eq('${{ variables.ios_enabled }}', 'true')
         pool:
           vmImage: 'macOS-latest'
-        variables:
-          ios_archs: "armv7 arm64 x86_64"
+        strategy:
+          matrix:
+            armv7:
+              buildArch: armv7
+            arm64:
+              buildArch: arm64
+            x86_64:
+              buildArch: x86_64
         steps:
           - checkout: none
 
@@ -279,11 +285,11 @@ stages:
               cleanDestinationFolder: false
 
           - bash: cd assimp-$(assimpVersion)/port/iOS &&
-              ./build.sh --archs="$(ios_archs)" --stdlib=libc++ --no-fat --std=c++14
+              ./build.sh --archs="$(buildArch)" --stdlib=libc++ --no-fat --std=c++14
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimpVersion)/lib/iOS
-            artifact: Assimp-iOS
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimpVersion)/lib/iOS/$(buildArch)/libassimp.a
+            artifact: Assimp-iOS-$(buildArch)
 
       ## Docs
       - job: build_docs
