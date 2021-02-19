@@ -5,7 +5,8 @@ trigger:
   - feature/*
 
 variables:
-  assimp_version: 5.0.1
+  assimpVersion: 5.0.1
+  assimpNetVersion: 5.0.1
   package_folder: com.arsenstudio.assimp
   publish_feed: stable
 
@@ -24,6 +25,7 @@ stages:
   - stage: build
     displayName: Build
     jobs:
+      ## AssimpNet
       - job: build_assimpnet
         displayName: AssimpNet
         pool:
@@ -35,8 +37,18 @@ stages:
         steps:
           - checkout: none
 
-          - bash: git clone https://github.com/intelligide/assimpnet-unity assimpnet && cd assimpnet
+          - bash: curl -L https://github.com/intelligide/assimpnet-unity/archive/$(assimpNetVersion).tar.gz -o assimpnet.zip
             displayName: Download AssimpNet sources
+
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder:
+              cleanDestinationFolder: false
+
+          - bash: cd assimpnet-unity-$(assimpNetVersion)
+            displayName: Chnage directory to AssimpNet source directory
 
           - task: NuGetToolInstaller@1
             displayName: Nuget installation
@@ -54,25 +66,26 @@ stages:
               configuration: '$(buildConfiguration)'
 
           - publish: $(System.DefaultWorkingDirectory)/assimpnet/AssimpNet/bin/Release
-            artifact: assimp_net
+            artifact: AssimpNet
 
+      ## Windows
       - job: build_assimp_win
         displayName: Assimp for Windows
         condition: eq('${{ variables.windows_enabled }}', 'true')
         strategy:
           matrix:
             x86_64:
-              GENERATOR_ARCH: x64
-              BUILD_ARCH: x64
+              cmakeGeneratorArch: x64
+              buildArch: x64
             x86:
-              GENERATOR_ARCH: Win32
-              BUILD_ARCH: x86
+              cmakeGeneratorArch: Win32
+              buildArch: x86
         pool:
           vmImage: 'windows-2019'
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
@@ -85,28 +98,36 @@ stages:
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(assimp_version)
-              cmakeArgs: -G "Visual Studio 16 2019" -A $(GENERATOR_ARCH) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
-                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
-                -DLIBRARY_SUFFIX="" -DINJECT_DEBUG_POSTFIX=OFF
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: -G "Visual Studio 16 2019" -A $(cmakeGeneratorArch) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
+                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DLIBRARY_SUFFIX=""
+                -DINJECT_DEBUG_POSTFIX=OFF -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
           - task: MSBuild@1
             displayName: Build Assimp
             inputs:
-              solution: assimp-$(assimp_version)/Assimp.sln
-              msbuildArchitecture: $(BUILD_ARCH)
+              solution: assimp-$(assimpVersion)/Assimp.sln
+              msbuildArchitecture: $(buildArch)
               configuration: MinSizeRel
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/bin/MinSizeRel
-            artifact: assimp_win_$(BUILD_ARCH)
+          - task: MSBuild@1
+            displayName: Install Assimp
+            inputs:
+              solution: assimp-$(assimpVersion)/INSTALL.vcxproj
+              msbuildArchitecture: $(buildArch)
+              configuration: MinSizeRel
 
+          - publish: $(Build.BinariesDirectory)/bin
+            artifact: Assimp-Win-$(buildArch)
+
+      ## Linux
       - job: build_assimp_linux
         displayName: Assimp for Linux
         condition: eq('${{ variables.linux_enabled }}', 'true')
         strategy:
           matrix:
             x86_64:
-              ARCH: x64
+              buildArch: x64
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -115,7 +136,7 @@ stages:
           - bash: sudo apt-get update -yqq && sudo apt install -y ninja-build
             displayName: Install Ninja
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
@@ -128,27 +149,31 @@ stages:
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(assimp_version)
-              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON
-                -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
+                -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
-          - bash: cd assimp-$(assimp_version) && ninja
+          - bash: cd assimp-$(assimpVersion) && ninja
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib
-            artifact: assimp_linux_$(ARCH)
+          - bash: cd assimp-$(assimpVersion) && ninja install
+            displayName: Install Assimp
 
+          - publish: $(Build.BinariesDirectory)/lib
+            artifact: Assimp-Linux-$(buildArch)
+
+      ## Android
       - job: build_assimp_android
         displayName: Assimp for Android
         condition: eq('${{ variables.android_enabled }}', 'true')
         strategy:
           matrix:
             armv7:
-              android_abi: armeabi-v7a
+              androidABI: armeabi-v7a
             arm64:
-              android_abi: arm64-v8a
+              androidABI: arm64-v8a
             x86:
-              android_abi: x86
+              androidABI: x86
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -157,7 +182,7 @@ stages:
           - bash: sudo apt-get update -yqq && sudo apt install -y ninja-build
             displayName: Install Ninja
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
@@ -170,27 +195,31 @@ stages:
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(assimp_version)
-              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=$(android_abi)
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=$(androidABI)
                 -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
                 -DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake
-                -DASSIMP_NO_EXPORT=ON -DBUILD_SHARED_LIBS=ON
+                -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
-          - bash: cd assimp-$(assimp_version) && ninja
+          - bash: cd assimp-$(assimpVersion) && ninja
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/
-            artifact: assimp_android_$(android_abi)
+          - bash: cd assimp-$(assimpVersion) && ninja install
+            displayName: Install Assimp
 
+          - publish: $(Build.BinariesDirectory)/lib
+            artifact: Assimp-Android-$(androidABI)
+
+      ## macOS
       - job: build_assimp_macos_x86_64
-        displayName: Assimp for Mac OS X x86_64
+        displayName: Assimp for Mac OS x86_64
         condition: eq('${{ variables.macosx_enabled }}', 'true')
         pool:
           vmImage: 'macOS-10.15'
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
@@ -203,21 +232,32 @@ stages:
           - task: CMake@1
             displayName: Configure Assimp
             inputs:
-              workingDirectory: assimp-$(assimp_version)
+              workingDirectory: assimp-$(assimpVersion)
               cmakeArgs: -G Xcode -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
-                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON  -DBUILD_SHARED_LIBS=ON
+                -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
 
           - task: Xcode@5
+            displayName: Build Assimp
             inputs:
               packageApp: false
-              workingDirectory: assimp-$(assimp_version)
+              workingDirectory: assimp-$(assimpVersion)
               scheme: ALL_BUILD
               configuration: MinSizeRel
               sdk: macosx10.15
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/MinSizeRel
-            artifact: assimp_macos_x86_64
+          - task: Xcode@5
+            displayName: Install Assimp
+            inputs:
+              packageApp: false
+              workingDirectory: assimp-$(assimpVersion)
+              scheme: INSTALL
+              configuration: MinSizeRel
+              sdk: macosx10.15
 
+          - publish: $(Build.BinariesDirectory)/lib
+            artifact: Assimp-macOS-x86_64
+
+      ## iOS
       - job: build_assimp_ios
         displayName: Assimp for iOS
         condition: eq('${{ variables.ios_enabled }}', 'true')
@@ -228,7 +268,7 @@ stages:
         steps:
           - checkout: none
 
-          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimp_version).zip -o assimp.zip
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
             displayName: Download Assimp sources
 
           - task: ExtractFiles@1
@@ -238,12 +278,12 @@ stages:
               destinationFolder:
               cleanDestinationFolder: false
 
-          - bash: cd assimp-$(assimp_version)/port/iOS &&
+          - bash: cd assimp-$(assimpVersion)/port/iOS &&
               ./build.sh --archs="$(ios_archs)" --stdlib=libc++ --no-fat --std=c++14
             displayName: Build Assimp
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimp_version)/lib/iOS
-            artifact: assimp_ios
+          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimpVersion)/lib/iOS
+            artifact: Assimp-iOS
 
       ## Docs
       - job: build_docs
@@ -268,7 +308,7 @@ stages:
             workingDirectory: $(build.SourcesDirectory)/docs
 
           - publish: $(build.binariesDirectory)/_site
-            artifact: docs
+            artifact: Docs
 
 ########################################################################################################################
 ## Packaging
@@ -351,22 +391,22 @@ stages:
 ## Publishing
 ########################################################################################################################
 
-  - stage: publishing
-    displayName: Publishing
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    jobs:
-      - job: publishing
-        displayName: Publishing
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - download: current
-            artifact: final_package
+  # - stage: publishing
+  #   displayName: Publishing
+  #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  #   jobs:
+  #     - job: publishing
+  #       displayName: Publishing
+  #       pool:
+  #         vmImage: 'ubuntu-latest'
+  #       steps:
+  #         - download: current
+  #           artifact: final_package
 
-          - task: Npm@1
-            displayName: Publishing package
-            inputs:
-              workingDir: $(build.SourcesDirectory)/$(package_folder)
-              command: publish
-              publishRegistry: useFeed
-              publishFeed: $(System.TeamProjectId)/$(publish_feed)
+  #         - task: Npm@1
+  #           displayName: Publishing package
+  #           inputs:
+  #             workingDir: $(build.SourcesDirectory)/$(package_folder)
+  #             command: publish
+  #             publishRegistry: useFeed
+  #             publishFeed: $(System.TeamProjectId)/$(publish_feed)
