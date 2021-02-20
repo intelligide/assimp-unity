@@ -212,7 +212,7 @@ stages:
               cmakeArgs: -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=$(androidABI)
                 -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
                 -DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake
-                -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
+                -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory) -DANDROID_STL=c++_shared
 
           - task: CMake@1
             displayName: Build Assimp
