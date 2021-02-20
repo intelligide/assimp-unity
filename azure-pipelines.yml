@@ -224,7 +224,7 @@ stages:
             displayName: Install Assimp
             inputs:
               workingDirectory: assimp-$(assimpVersion)
-              cmakeArgs: --build . --target install --config MinSizeRel
+              cmakeArgs: --build . --target install/strip --config MinSizeRel
 
           - publish: $(Build.BinariesDirectory)/lib/libassimp.so
             artifact: Assimp-Android-$(androidABI)
