@@ -1,4 +1,3 @@
-ls
 
 ###################################
 # 		 SDK Version
@@ -78,6 +77,7 @@ configure_cmake()
 
     echo "[!] Configuring CMake for $1 with -G 'Unix Makefiles' $CMAKE_CLI_INPUT"
 
+    ls
     cmake -G 'Unix Makefiles' ${CMAKE_CLI_INPUT}
 }
 
