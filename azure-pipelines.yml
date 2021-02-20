@@ -239,8 +239,8 @@ stages:
             matrix:
               x86_64: {}
         variables:
-          CFLAGS: -g0 -Wl,-s
-          CXXFLAGS: -g0 -Wl,-s
+          CFLAGS: -g0
+          CXXFLAGS: -g0
           LDFLAGS: -g0 -s
         steps:
           - checkout: none
@@ -292,11 +292,11 @@ stages:
             x86_64:
               buildArch: x86_64
         variables:
-          CFLAGS: -g0 -s -Wl,-s
-          CXXFLAGS: -g0 -s -Wl,-s
-          LDFLAGS: -g0 -s -Wl,-s
+          CFLAGS: -g0
+          CXXFLAGS: -g0
+          LDFLAGS: -g0 -s
         steps:
-          - checkout: none
+          - checkout: self
 
           - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
             displayName: Download Assimp sources
@@ -308,9 +308,25 @@ stages:
               destinationFolder:
               cleanDestinationFolder: false
 
-          - bash: cd assimp-$(assimpVersion)/port/iOS &&
-              ./build.sh --archs="$(buildArch)" --stdlib=libc++ --no-fat --std=c++14
+          #- bash: cd assimp-$(assimpVersion)/port/iOS &&
+          #    ./build.sh --archs="$(buildArch)" --stdlib=libc++ --no-fat --std=c++14
+          #  displayName: Build Assimp
+
+          - bash: $(Build.SourcesDirectory)/build-scripts/ios/configure_cmake.sh --arch="$(buildArch)"
+              -S=assimp-$(assimpVersion) -B=assimp-$(assimpVersion) --stdlib=libc++ --std=c++14
+            displayName: Configure Assimp
+
+          - task: CMake@1
             displayName: Build Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --config MinSizeRel
+
+          - task: CMake@1
+            displayName: Install Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: --build . --target install/strip --config MinSizeRel
 
           - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimpVersion)/lib/iOS/$(buildArch)/libassimp.a
             artifact: Assimp-iOS-$(buildArch)
