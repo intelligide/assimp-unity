@@ -77,7 +77,7 @@ configure_cmake()
 
     echo "[!] Configuring CMake for $1 with -G 'Unix Makefiles' $CMAKE_CLI_INPUT"
 
-    ls
+    ls assimp-5.0.1/port/iOS
     cmake -G 'Unix Makefiles' ${CMAKE_CLI_INPUT}
 }
 
