@@ -128,9 +128,9 @@ stages:
             x86_64:
               buildArch: x64
         variables:
-          CFLAGS: -g0 -s
-          CXXFLAGS: -g0 -s
-          LDFLAGS: -g0 -s
+          CFLAGS: -g0 -s -Wl,-s
+          CXXFLAGS: -g0 -s -Wl,-s
+          LDFLAGS: -g0 -s -Wl,-s
         pool:
           vmImage: 'ubuntu-20.04'
         steps:
@@ -184,9 +184,9 @@ stages:
             x86:
               androidABI: x86
         variables:
-          CFLAGS: -g0 -s
-          CXXFLAGS: -g0 -s
-          LDFLAGS: -g0 -s
+          CFLAGS: -g0 -s -Wl,-s
+          CXXFLAGS: -g0 -s -Wl,-s
+          LDFLAGS: -g0 -s -Wl,-s
         pool:
           vmImage: 'ubuntu-20.04'
         steps:
@@ -230,11 +230,18 @@ stages:
             artifact: Assimp-Android-$(androidABI)
 
       ## macOS
-      - job: build_assimp_macos_x86_64
-        displayName: Assimp for Mac OS x86_64
+      - job: build_assimp_macos
+        displayName: Assimp for Mac OS
         condition: eq('${{ variables.macosx_enabled }}', 'true')
         pool:
           vmImage: 'macOS-10.15'
+          strategy:
+            matrix:
+              x86_64: {}
+        variables:
+          CFLAGS: -g0 -s -Wl,-s
+          CXXFLAGS: -g0 -s -Wl,-s
+          LDFLAGS: -g0 -s -Wl,-s
         steps:
           - checkout: none
 
@@ -284,6 +291,10 @@ stages:
               buildArch: arm64
             x86_64:
               buildArch: x86_64
+        variables:
+          CFLAGS: -g0 -s -Wl,-s
+          CXXFLAGS: -g0 -s -Wl,-s
+          LDFLAGS: -g0 -s -Wl,-s
         steps:
           - checkout: none
 
