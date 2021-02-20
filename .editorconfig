@@ -11,3 +11,6 @@ trim_trailing_whitespace = true
 [{azure-pipelines.yml,*.json}]
 indent_style = space
 indent_size = 2
+
+[*.sh]
+end_of_line = lf
