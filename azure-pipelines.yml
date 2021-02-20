@@ -272,7 +272,7 @@ stages:
             displayName: Install Assimp
             inputs:
               workingDirectory: assimp-$(assimpVersion)
-              cmakeArgs: --build . --target install --config MinSizeRel
+              cmakeArgs: --build . --target install/strip --config MinSizeRel
 
           - publish: $(Build.BinariesDirectory)/lib/libassimp.dylib
             artifact: Assimp-macOS-x86_64
