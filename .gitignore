@@ -30,3 +30,7 @@
 *.suo
 *.userprefs
 .npmrc
+
+*.dll
+*.so
+*.a

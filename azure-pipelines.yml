@@ -127,6 +127,9 @@ stages:
           matrix:
             x86_64:
               buildArch: x64
+        variables:
+          CFLAGS: -g0
+          CXXFLAGS: -g0
         pool:
           vmImage: 'ubuntu-20.04'
         steps:
@@ -179,6 +182,9 @@ stages:
               androidABI: arm64-v8a
             x86:
               androidABI: x86
+        variables:
+          CFLAGS: -g0
+          CXXFLAGS: -g0
         pool:
           vmImage: 'ubuntu-20.04'
         steps:

@@ -1,9 +1,9 @@
 {
   "name": "com.arsenstudio.assimp",
   "version": "5.0.0",
-  "displayName": "AssimpNet",
+  "displayName": "Assimp for Unity",
   "unity": "2018.1",
-  "description": "Assimp for C#/Unity",
+  "description": "Assimp for C# / Unity",
   "type": "library",
   "keywords": ["assimp", "mesh importer"],
   "author": {
