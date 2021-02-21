@@ -312,8 +312,8 @@ stages:
           #    ./build.sh --archs="$(buildArch)" --stdlib=libc++ --no-fat --std=c++14
           #  displayName: Build Assimp
 
-          - bash: $(Build.SourcesDirectory)/build-scripts/ios/configure_cmake.sh --arch="$(buildArch)"
-              -S=./assimp-$(assimpVersion) -B=./assimp-$(assimpVersion) --stdlib=libc++ --std=c++14
+          - bash: cd assimp-$(assimpVersion) && $(Build.SourcesDirectory)/build-scripts/ios/configure_cmake.sh --arch="$(buildArch)"
+              -S=. -B=. --stdlib=libc++ --std=c++14
             displayName: Configure Assimp
 
           - task: CMake@1
