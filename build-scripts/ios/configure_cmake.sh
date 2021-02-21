@@ -37,6 +37,7 @@ CPP_STD=c++11
 
 SOURCE_DIRECTORY="."
 BUILD_DIRECTORY="."
+INSTALL_DIRECTORY="./install"
 
 ARCH_TARGET=
 
@@ -71,13 +72,17 @@ configure_cmake()
     export CPPFLAGS="$CPPFLAGS $EXTRAFLAGS"
     export CXXFLAGS="$CXXFLAGS $EXTRAFLAGS -std=$CPP_STD"
 
-    CMAKE_CLI_INPUT="-S $SOURCE_DIRECTORY -B $BUILD_DIRECTORY -DCMAKE_C_COMPILER=$CMAKE_C_COMPILER -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER
+    CMAKE_CLI_INPUT="-S $SOURCE_DIRECTORY -B $BUILD_DIRECTORY -DCMAKE_INSTALL_PREFIX=$INSTALL_DIRECTORY
+        -DCMAKE_C_COMPILER=$CMAKE_C_COMPILER
+        -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER
         -DCMAKE_TOOLCHAIN_FILE=$SOURCE_DIRECTORY/port/iOS/IPHONEOS_$(echo $1 | tr '[:lower:]' '[:upper:]')_TOOLCHAIN.cmake
-        -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS
+        -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
+        -DASSIMP_BUILD_TESTS=OFF"
 
     echo "[!] Configuring CMake for $1 with -G 'Unix Makefiles' $CMAKE_CLI_INPUT"
 
-    ls assimp-5.0.1/port/iOS
     cmake -G 'Unix Makefiles' ${CMAKE_CLI_INPUT}
 }
 
@@ -94,6 +99,10 @@ for i in "$@"; do
     -B=*|--build-directory=*)
         BUILD_DIRECTORY=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
         echo "[!] Build directory: $BUILD_DIRECTORY"
+    ;;
+    -I=*|--install-directory=*)
+        INSTALL_DIRECTORY=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
+        echo "[!] Installation directory: $INSTALL_DIRECTORY"
     ;;
     -s=*|--std=*)
         CPP_STD=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`

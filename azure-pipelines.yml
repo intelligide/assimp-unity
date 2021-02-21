@@ -308,12 +308,8 @@ stages:
               destinationFolder:
               cleanDestinationFolder: false
 
-          #- bash: cd assimp-$(assimpVersion)/port/iOS &&
-          #    ./build.sh --archs="$(buildArch)" --stdlib=libc++ --no-fat --std=c++14
-          #  displayName: Build Assimp
-
           - bash: cd assimp-$(assimpVersion) && $(Build.SourcesDirectory)/build-scripts/ios/configure_cmake.sh --arch="$(buildArch)"
-              -S=. -B=. --stdlib=libc++ --std=c++14
+              -S=. -B=. -I=$(Build.BinariesDirectory) --stdlib=libc++ --std=c++14
             displayName: Configure Assimp
 
           - task: CMake@1
@@ -328,7 +324,7 @@ stages:
               workingDirectory: assimp-$(assimpVersion)
               cmakeArgs: --build . --target install/strip --config MinSizeRel
 
-          - publish: $(System.DefaultWorkingDirectory)/assimp-$(assimpVersion)/lib/iOS/$(buildArch)/libassimp.a
+          - publish: $(Build.BinariesDirectory)/lib/libassimp.a
             artifact: Assimp-iOS-$(buildArch)
 
       ## Docs
