@@ -313,7 +313,7 @@ stages:
           #  displayName: Build Assimp
 
           - bash: $(Build.SourcesDirectory)/build-scripts/ios/configure_cmake.sh --arch="$(buildArch)"
-              -S=assimp-$(assimpVersion) -B=assimp-$(assimpVersion) --stdlib=libc++ --std=c++14
+              -S=./assimp-$(assimpVersion) -B=./assimp-$(assimpVersion) --stdlib=libc++ --std=c++14
             displayName: Configure Assimp
 
           - task: CMake@1
