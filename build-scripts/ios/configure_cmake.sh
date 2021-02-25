@@ -66,7 +66,7 @@ configure_cmake()
     if [[ "$BUILD_TYPE" =~ "Debug" ]]; then
         export EXTRAFLAGS="$EXTRAFLAGS -Og"
     else
-	    export EXTRAFLAGS="$EXTRAFLAGS -O3"
+	    export EXTRAFLAGS="$EXTRAFLAGS -Os"
     fi
     export LDFLAGS="$LDFLAGS -arch $1 -isysroot $SDKROOT -L$SDKROOT/usr/lib/"
     export CFLAGS="$CFLAGS $EXTRAFLAGS"
