@@ -87,7 +87,7 @@ jobs:
           path: assimp-${{ env.AssimpVersion }}/bin/MinSizeRel
 
   build_assimp_linux:
-    name: Assimp for Linux
+    name: Build Assimp for Linux
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
