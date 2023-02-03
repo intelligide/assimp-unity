@@ -137,7 +137,7 @@ jobs:
       - name: Configure Assimp
         run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=${{ matrix.AndroidABI }}
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_SDK_ROOT/ndk-bundle/build/cmake/android.toolchain.cmake
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake
             -DASSIMP_NO_EXPORT=ON -DBUILD_SHARED_LIBS=ON
         working-directory : assimp-${{ env.AssimpVersion }}
 
