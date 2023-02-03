@@ -11,7 +11,7 @@ on:
 env:
   AssimpVersion: 4.1.0
   AssimpNetVersion: 4.1.0
-  PackageFolder: "com.arsenstudio.assimp"
+  PackageFolder: "packages/com.arsenstudio.assimp"
 
 jobs:
   build_assimpnet:
