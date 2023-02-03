@@ -289,7 +289,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: final_package
-          path: ${{ PackageFolder }}
+          path: ${{ env.PackageFolder }}
 
   # publishing:
   #   name: Publishing
