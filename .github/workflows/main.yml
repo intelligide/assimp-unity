@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_net
+          name: AssimpNet
           path: assimpnet/AssimpNet/bin/Release
 
   build_assimp_win:
@@ -70,25 +70,30 @@ jobs:
 
       - name: Configure Assimp
         run: cmake -G "${{ env.GeneratorName }}" -A ${{ matrix.GeneratorArch }} -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
-            -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+            -DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+            -DLIBRARY_SUFFIX="" -DINJECT_DEBUG_POSTFIX=OFF -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
         working-directory : assimp-${{ env.AssimpVersion }}
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
-        with:
-          msbuild-architecture: ${{ matrix.BuildArch }}
-
       - name: Build Assimp
-        run: msbuild assimp-${{ env.AssimpVersion }}/Assimp.sln /property:Configuration=MinSizeRel
+        run: cmake --build . --config MinSizeRel
+        working-directory : assimp-${{ env.AssimpVersion }}
+
+      - name: Install Assimp
+        run: cmake --build . --target install --config MinSizeRel
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_win_${{ matrix.BuildArch }}
-          path: assimp-${{ env.AssimpVersion }}/bin/MinSizeRel
+          name: Assimp-Win-${{ matrix.BuildArch }}
+          path: ${{ runner.temp }}/bin/assimp.dll
 
   build_assimp_linux:
     name: Build Assimp for Linux
     runs-on: ubuntu-latest
+    env:
+      CFLAGS: -g0 -s -Wl,-s
+      CXXFLAGS: -g0 -s -Wl,-s
+      LDFLAGS: -g0 -s -Wl,-s
     strategy:
       fail-fast: false
       matrix:
@@ -104,22 +109,30 @@ jobs:
         run: unzip assimp.zip
 
       - name: Configure Assimp
-        run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
-            -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+        run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
+            -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
         working-directory : assimp-${{ env.AssimpVersion }}
 
       - name: Build Assimp
-        run: ninja
+        run: cmake --build . --config MinSizeRel
+        working-directory : assimp-${{ env.AssimpVersion }}
+
+      - name: Install Assimp
+        run: cmake --build . --target install --config MinSizeRel
         working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_linux_${{ matrix.BuildArch }}
-          path: assimp-${{ env.AssimpVersion }}/lib
+          name: Assimp-Linux-${{ matrix.BuildArch }}
+          path: ${{ runner.temp }}/lib/libassimp.so
 
   build_assimp_android:
     name: Build Assimp for Android
     runs-on: ubuntu-latest
+    env:
+      CFLAGS: -g0 -s -Wl,-s
+      CXXFLAGS: -g0 -s -Wl,-s
+      LDFLAGS: -g0 -s -Wl,-s
     strategy:
       fail-fast: false
       matrix:
@@ -138,21 +151,33 @@ jobs:
         run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=${{ matrix.AndroidABI }}
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
             -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake
-            -DASSIMP_NO_EXPORT=ON -DBUILD_SHARED_LIBS=ON
+            -DBUILD_SHARED_LIBS=ON -DANDROID_STL=c++_shared -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
         working-directory : assimp-${{ env.AssimpVersion }}
 
       - name: Build Assimp
-        run: ninja
+        run: cmake --build . --config MinSizeRel
+        working-directory : assimp-${{ env.AssimpVersion }}
+
+      - name: Install Assimp
+        run: cmake --build . --target install/strip --config MinSizeRel
         working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_android_${{ matrix.AndroidABI }}
-          path: assimp-${{ env.AssimpVersion }}/lib
+          name: Assimp-Android-${{ matrix.AndroidABI }}
+          path: ${{ runner.temp }}/lib/libassimp.so
 
   build_assimp_macos:
-    name: Build Assimp for Mac OS X x86_64
+    name: Build Assimp for Mac OS X
     runs-on: 'macos-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        BuildArch: [x86_64]
+    env:
+      CFLAGS: -g0
+      CXXFLAGS: -g0
+      LDFLAGS: -g0 -s
     steps:
       - name: Extract Assimp sources
         run: curl -L https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip -o assimp.zip
@@ -160,28 +185,34 @@ jobs:
       - name: Download Assimp sources
         run: unzip assimp.zip
 
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
       - name: Configure Assimp
-        run: cmake -G Xcode -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
-            -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+        run: cmake -G "Unix Makefiles" -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
+            -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
         working-directory : assimp-${{ env.AssimpVersion }}
 
-      - run: xcodebuild -scheme ALL_BUILD -configuration MinSizeRel -sdk macosx13.1
+      - name: Build Assimp
+        run: cmake --build . --config MinSizeRel
+        working-directory : assimp-${{ env.AssimpVersion }}
+
+      - name: Install Assimp
+        run: cmake --build . --target install/strip --config MinSizeRel
         working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_macos_x86_64
-          path: assimp-${{ env.AssimpVersion }}/lib/MinSizeRel
+          name: Assimp-macOS-${{ matrix.BuildArch }}
+          path: ${{ runner.temp }}/lib/libassimp.dylib
 
   build_assimp_ios:
     name: Build Assimp for iOS
     runs-on: 'macos-latest'
     env:
-      ios_archs: "armv7 arm64 x86_64"
+      CFLAGS: -g0
+      CXXFLAGS: -g0
+      LDFLAGS: -g0 -s
+    strategy:
+      matrix:
+        BuildArch: [armv7, arm64, x86_64]
     steps:
       - name: Download Assimp sources
         run: curl -L https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip -o assimp.zip
@@ -194,12 +225,12 @@ jobs:
           xcode-version: latest-stable
 
       - name: Build Assimp
-        run: ./build.sh --archs="${{ env.ios_archs }}" --stdlib=libc++ --no-fat --std=c++14
+        run: ./build.sh --archs="${{ matrix.BuildArch }}" --stdlib=libc++ --no-fat --std=c++14
         working-directory: assimp-${{ env.AssimpVersion }}/port/iOS
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_ios
+          name: Assimp-iOS-${{ matrix.BuildArch }}
           path: assimp-${{ env.AssimpVersion }}/lib/iOS
 
   build_docs:
@@ -247,37 +278,37 @@ jobs:
         run: cp -f -R ${{ env.ArtifactTemporaryDir }}/docs ${{ env.PackageFolder }}/Documentation~
 
       - name: Install AssimpNet
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_net/netstandard2.0/AssimpNet.dll ${{ env.PackageFolder }}/AssimpNet.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/netstandard2.0/AssimpNet.dll ${{ env.PackageFolder }}/AssimpNet.dll
 
       - name: Install Assimp for Windows x64
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_win_x64/assimp-vc140-mt.dll ${{ env.PackageFolder }}/Plugins/win/x86_64/assimp.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/assimp.dll ${{ env.PackageFolder }}/Plugins/win/x86_64/assimp.dll
 
       - name: Install Assimp for Windows x86
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_win_x86/assimp-vc140-mt.dll ${{ env.PackageFolder }}/Plugins/win/x86/assimp.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x86/assimp.dll ${{ env.PackageFolder }}/Plugins/win/x86/assimp.dll
 
       - name: Install Assimp for Linux x86_64
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_linux_x64/libassimp.so ${{ env.PackageFolder }}/Plugins/linux/x86_64/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Linux-x64/libassimp.so ${{ env.PackageFolder }}/Plugins/linux/x86_64/libassimp.so
 
       - name: Install Assimp for Mac OS X x86_64
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_macos_x86_64/libassimp.dylib ${{ env.PackageFolder }}/Plugins/osx/x86_64/libassimp.dylib
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-macOS-x86_64/libassimp.dylib ${{ env.PackageFolder }}/Plugins/osx/x86_64/libassimp.dylib
 
       - name: Install Assimp for Android armv7
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_android_armeabi-v7a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/armv7/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-armeabi-v7a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/armv7/libassimp.so
 
       - name: Install Assimp for Android arm64
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_android_arm64-v8a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/arm64/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-arm64-v8a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/arm64/libassimp.so
 
       - name: Install Assimp for Android x86
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_android_x86/libassimp.so ${{ env.PackageFolder }}/Plugins/android/x86/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86/libassimp.so ${{ env.PackageFolder }}/Plugins/android/x86/libassimp.so
 
       - name: Install Assimp for iOS armv7
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_ios/armv7/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/armv7/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-armv7/armv7/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/armv7/libassimp.a
 
       - name: Install Assimp for iOS arm64
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_ios/arm64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/arm64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/arm64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/arm64/libassimp.a
 
       - name: Install Assimp for iOS x86_64
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_ios/x86_64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/x64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/x86_64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/x64/libassimp.a
 
       - name: Copy README
         run: cp -f README.md ${{ env.PackageFolder }}/README.md
