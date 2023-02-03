@@ -36,10 +36,10 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       - name: Restore solution
-        run: nuget restore ${{ Solution }}
+        run: nuget restore ${{ env.Solution }}
 
       - name: Build app for release
-        run: msbuild ${{ Solution }} -property:Configuration=${{ BuildConfiguration }} -property:Platform=${{ BuildPlatform }}
+        run: msbuild ${{ env.Solution }} -property:Configuration=${{ env.BuildConfiguration }} -property:Platform=${{ env.BuildPlatform }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -62,28 +62,28 @@ jobs:
     steps:
       - name: Download Assimp sources
         shell: pwsh
-        run: Invoke-WebRequest -Uri "https://github.com/assimp/assimp/archive/v${{ AssimpVersion }}.zip" -OutFile assimp.zip
+        run: Invoke-WebRequest -Uri "https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip" -OutFile assimp.zip
 
       - name: Extract Assimp sources
         run: 7z x assimp.zip
 
       - name: Configure Assimp
-        run: cmake -G "${{ GeneratorName }}" -A ${{ GeneratorArch }} -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
+        run: cmake -G "${{ matrix.GeneratorName }}" -A ${{ matrix.GeneratorArch }} -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1
         with:
-          msbuild-architecture: ${{ BuildArch }}
+          msbuild-architecture: ${{ matrix.BuildArch }}
 
       - name: Build Assimp
-        run: msbuild assimp-${{ AssimpVersion }}/Assimp.sln -property:Configuration=${{ MinSizeRel }}
+        run: msbuild assimp-${{ env.AssimpVersion }}/Assimp.sln -property:Configuration=MinSizeRel
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_win_${{ BuildArch }}
-          path: assimp-${{ AssimpVersion }}/bin/MinSizeRel
+          name: assimp_win_${{ matrix.BuildArch }}
+          path: assimp-${{ env.AssimpVersion }}/bin/MinSizeRel
 
   build_assimp_linux:
     name: Assimp for Linux
@@ -104,16 +104,16 @@ jobs:
       - name: Configure Assimp
         run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - name: Build Assimp
         run: ninja
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_linux_${{ BuildArch }}
-          path: assimp-${{ AssimpVersion }}/lib
+          name: assimp_linux_${{ matrix.BuildArch }}
+          path: assimp-${{ env.AssimpVersion }}/lib
 
   build_assimp_android:
     name: Build Assimp for Android
@@ -132,20 +132,20 @@ jobs:
         run: unzip assimp.zip
 
       - name: Configure Assimp
-        run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=${{ AndroidABI }}
+        run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI=${{ matrix.AndroidABI }}
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
-            -DCMAKE_TOOLCHAIN_FILE=${{ ANDROID_SDK_ROOT }}/ndk-bundle/build/cmake/android.toolchain.cmake
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.ANDROID_SDK_ROOT }}/ndk-bundle/build/cmake/android.toolchain.cmake
             -DASSIMP_NO_EXPORT=ON -DBUILD_SHARED_LIBS=ON
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - name: Build Assimp
         run: ninja
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: assimp_android_${{ AndroidABI }}
-          path: assimp-${{ AssimpVersion }}/lib
+          name: assimp_android_${{ matrix.AndroidABI }}
+          path: assimp-${{ env.AssimpVersion }}/lib
 
   build_assimp_macos:
     name: Build Assimp for Mac OS X x86_64
@@ -164,15 +164,15 @@ jobs:
       - name: Configure Assimp
         run: cmake -G Xcode -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_NO_EXPORT=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - run: xcodebuild -scheme ALL_BUILD -configuration MinSizeRel -sdk macosx13.1
-        working-directory : assimp-${{ AssimpVersion }}
+        working-directory : assimp-${{ env.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: assimp_macos_x86_64
-          path: assimp-${{ AssimpVersion }}/lib/MinSizeRel
+          path: assimp-${{ env.AssimpVersion }}/lib/MinSizeRel
 
   build_assimp_ios:
     name: Build Assimp for iOS
@@ -191,13 +191,13 @@ jobs:
           xcode-version: latest-stable
 
       - name: Build Assimp
-        run: ./build.sh --archs="$(ios_archs)" --stdlib=libc++ --no-fat --std=c++14
-        working-directory: assimp-${{ AssimpVersion }}/port/iOS
+        run: ./build.sh --archs="${{ env.ios_archs }}" --stdlib=libc++ --no-fat --std=c++14
+        working-directory: assimp-${{ env.AssimpVersion }}/port/iOS
 
       - uses: actions/upload-artifact@v3
         with:
           name: assimp_ios
-          path: assimp-${{ AssimpVersion }}/lib/iOS
+          path: assimp-${{ env.AssimpVersion }}/lib/iOS
 
 
   build_docs:
@@ -213,7 +213,7 @@ jobs:
           working-directory: docs
 
       - name: Build docs with Jekyll
-        run: bundle exec jekyll build -d $(build.binariesDirectory)/_site
+        run: bundle exec jekyll build
         working-directory: docs
 
       - uses: actions/upload-artifact@v3
@@ -239,52 +239,52 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          path: ${{ ArtifactTemporaryDir }}
+          path: ${{ env.ArtifactTemporaryDir }}
 
       - name: Copy Docs
-        run: cp -f -R ${{ ArtifactTemporaryDir }}/docs ${{ PackageFolder }}/Documentation~
+        run: cp -f -R ${{ env.ArtifactTemporaryDir }}/docs ${{ env.PackageFolder }}/Documentation~
 
       - name: Install AssimpNet
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_net/netstandard2.0/AssimpNet.dll ${{ PackageFolder }}/AssimpNet.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_net/netstandard2.0/AssimpNet.dll ${{ env.PackageFolder }}/AssimpNet.dll
 
       - name: Install Assimp for Windows x64
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_win_x64/assimp-vc140-mt.dll ${{ PackageFolder }}/Plugins/win/x86_64/assimp.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_win_x64/assimp-vc140-mt.dll ${{ env.PackageFolder }}/Plugins/win/x86_64/assimp.dll
 
       - name: Install Assimp for Windows x86
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_win_x86/assimp-vc140-mt.dll ${{ PackageFolder }}/Plugins/win/x86/assimp.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_win_x86/assimp-vc140-mt.dll ${{ env.PackageFolder }}/Plugins/win/x86/assimp.dll
 
       - name: Install Assimp for Linux x86_64
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_linux_x64/libassimp.so ${{ PackageFolder }}/Plugins/linux/x86_64/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_linux_x64/libassimp.so ${{ env.PackageFolder }}/Plugins/linux/x86_64/libassimp.so
 
       - name: Install Assimp for Mac OS X x86_64
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_macos_x86_64/libassimp.dylib ${{ PackageFolder }}/Plugins/osx/x86_64/libassimp.dylib
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_macos_x86_64/libassimp.dylib ${{ env.PackageFolder }}/Plugins/osx/x86_64/libassimp.dylib
 
       - name: Install Assimp for Android armv7
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_android_armeabi-v7a/libassimp.so ${{ PackageFolder }}/Plugins/android/armv7/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_android_armeabi-v7a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/armv7/libassimp.so
 
       - name: Install Assimp for Android arm64
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_android_arm64-v8a/libassimp.so ${{ PackageFolder }}/Plugins/android/arm64/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_android_arm64-v8a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/arm64/libassimp.so
 
       - name: Install Assimp for Android x86
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_android_x86/libassimp.so ${{ PackageFolder }}/Plugins/android/x86/libassimp.so
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_android_x86/libassimp.so ${{ env.PackageFolder }}/Plugins/android/x86/libassimp.so
 
       - name: Install Assimp for iOS armv7
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_ios/armv7/libassimp.a ${{ PackageFolder }}/Plugins/ios/armv7/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_ios/armv7/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/armv7/libassimp.a
 
       - name: Install Assimp for iOS arm64
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_ios/arm64/libassimp.a ${{ PackageFolder }}/Plugins/ios/arm64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_ios/arm64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/arm64/libassimp.a
 
       - name: Install Assimp for iOS x86_64
-        run: cp -f ${{ ArtifactTemporaryDir }}/assimp_ios/x86_64/libassimp.a ${{ PackageFolder }}/Plugins/ios/x64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/assimp_ios/x86_64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/x64/libassimp.a
 
       - name: Copy README
-        run: cp -f README.md ${{ PackageFolder }}/README.md
+        run: cp -f README.md ${{ env.PackageFolder }}/README.md
 
       - name: Copy License
-        run: cp -f LICENSE.md ${{ PackageFolder }}/LICENSE.md
+        run: cp -f LICENSE.md ${{ env.PackageFolder }}/LICENSE.md
 
       - name: Delete gitkeep files
-        run: find ${{ PackageFolder }} -name '.gitkeep' -delete
+        run: find ${{ env.PackageFolder }} -name '.gitkeep' -delete
 
       - uses: actions/upload-artifact@v3
         with:
