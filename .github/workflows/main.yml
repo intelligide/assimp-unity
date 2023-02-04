@@ -18,8 +18,8 @@ jobs:
     name: Build
     uses: ./.github/workflows/package_generation.yml
     with:
-      assimpVersion: ${{ env.AssimpVersion }}
-      AssimpNetVersion: ${{ env.AssimpNetVersion }}
+      assimpVersion: 4.1.0
+      AssimpNetVersion: 4.1.0
 
   # build_assimpnet:
   #   name: Build AssimpNet
