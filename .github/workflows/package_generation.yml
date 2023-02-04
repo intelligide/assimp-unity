@@ -1,6 +1,12 @@
 on:
   workflow_call:
     inputs:
+      assimpVersion:
+        required: true
+        type: string
+      assimpNetVersion:
+        required: true
+        type: string
       packageName:
         default: 'UnityPackage'
         type: string
@@ -23,6 +29,9 @@ on:
       packageName:
         description: "The first output string"
         value: ${{ inputs.packageName }}
+
+env:
+  PackageFolder: "packages/com.arsenstudio.assimp"
 
 jobs:
   build_assimpnet:
@@ -75,7 +84,7 @@ jobs:
     steps:
       - name: Download Assimp sources
         shell: pwsh
-        run: Invoke-WebRequest -Uri "https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip" -OutFile assimp.zip
+        run: Invoke-WebRequest -Uri "https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip" -OutFile assimp.zip
 
       - name: Extract Assimp sources
         run: 7z x assimp.zip
@@ -84,15 +93,15 @@ jobs:
         run: cmake -G "${{ env.GeneratorName }}" -A ${{ matrix.GeneratorArch }} -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
             -DLIBRARY_SUFFIX="" -DINJECT_DEBUG_POSTFIX=OFF -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Build Assimp
         run: cmake --build . --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Install Assimp
         run: cmake --build . --target install --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -116,7 +125,7 @@ jobs:
         run: sudo apt-get update -yqq && sudo apt install -y ninja-build
 
       - name: Download Assimp sources
-        run: curl -L https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip -o assimp.zip
+        run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
 
       - name: Extract Assimp sources
         run: unzip assimp.zip
@@ -124,15 +133,15 @@ jobs:
       - name: Configure Assimp
         run: cmake -G Ninja -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
             -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Build Assimp
         run: cmake --build . --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Install Assimp
         run: cmake --build . --target install --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -156,7 +165,7 @@ jobs:
         run: sudo apt-get update -yqq && sudo apt install -y ninja-build
 
       - name: Download Assimp sources
-        run: curl -L https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip -o assimp.zip
+        run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
 
       - name: Extract Assimp sources
         run: unzip assimp.zip
@@ -166,15 +175,15 @@ jobs:
             -DASSIMP_BUILD_TESTS=OFF -DASSIMP_ANDROID_JNIIOSYSTEM=ON -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
             -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake
             -DBUILD_SHARED_LIBS=ON -DANDROID_STL=c++_shared -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Build Assimp
         run: cmake --build . --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Install Assimp
         run: cmake --build . --target install/strip --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -195,7 +204,7 @@ jobs:
       LDFLAGS: -g0 -s
     steps:
       - name: Extract Assimp sources
-        run: curl -L https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip -o assimp.zip
+        run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
 
       - name: Download Assimp sources
         run: unzip assimp.zip
@@ -203,15 +212,15 @@ jobs:
       - name: Configure Assimp
         run: cmake -G "Unix Makefiles" -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
             -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Build Assimp
         run: cmake --build . --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Install Assimp
         run: cmake --build . --target install/strip --config MinSizeRel
-        working-directory : assimp-${{ env.AssimpVersion }}
+        working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -227,11 +236,12 @@ jobs:
       CXXFLAGS: -g0
       LDFLAGS: -g0 -s
     strategy:
+      fail-fast: false
       matrix:
         BuildArch: [armv7, arm64, x86_64]
     steps:
       - name: Download Assimp sources
-        run: curl -L https://github.com/assimp/assimp/archive/v${{ env.AssimpVersion }}.zip -o assimp.zip
+        run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
 
       - name: Extract Assimp sources
         run: unzip assimp.zip
@@ -242,12 +252,12 @@ jobs:
 
       - name: Build Assimp
         run: ./build.sh --archs="${{ matrix.BuildArch }}" --stdlib=libc++ --no-fat --std=c++14
-        working-directory: assimp-${{ env.AssimpVersion }}/port/iOS
+        working-directory: assimp-${{ inputs.AssimpVersion }}/port/iOS
 
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-iOS-${{ matrix.BuildArch }}
-          path: assimp-${{ env.AssimpVersion }}/lib/iOS
+          path: assimp-${{ inputs.AssimpVersion }}/lib/iOS
 
   build_docs:
     name: Build Docs
