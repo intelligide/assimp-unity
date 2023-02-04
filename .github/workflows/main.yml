@@ -14,7 +14,8 @@ env:
   PackageFolder: "packages/com.arsenstudio.assimp"
 
 jobs:
-  job1:
+  build:
+    name: Build
     uses: ./.github/workflows/package_generation.yml
 
   # build_assimpnet:

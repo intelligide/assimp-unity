@@ -22,7 +22,7 @@ on:
     outputs:
       packageName:
         description: "The first output string"
-        value: ${{ input.packageName }}
+        value: ${{ inputs.packageName }}
 
 jobs:
   build_assimpnet:
