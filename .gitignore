@@ -1,5 +1,6 @@
 [Aa]rtifacts/
 [Bb]uild/
+[Bb]uilds/
 [Ll]ibrary/
 [Oo]bj/
 [Tt]emp/
@@ -9,6 +10,7 @@
 [Aa]ctual[Ii]mages.meta
 [Ll]og/
 [Ll]ogs/
+[Uu]ser[Ss]ettings/
 .vs
 .vscode
 .idea
@@ -30,4 +32,8 @@
 *.suo
 *.userprefs
 .npmrc
-TestProjects/*/ProjectSettings/ProjectVersion.txt
+
+packages/**/*.dll
+packages/**/*.so
+packages/**/*.a
+packages/**/*.dylib
