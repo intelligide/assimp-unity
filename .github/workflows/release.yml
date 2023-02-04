@@ -28,6 +28,12 @@ jobs:
         with:
           registry-url: 'https://npm.pkg.github.com'
 
+      - run: |
+          cat <<EOF > .npmrc
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          registry=https://npm.pkg.github.com/@${{ github.repository_owner }}
+          EOF
+
       - name: Publishing package
         run: npm publish
         env:
