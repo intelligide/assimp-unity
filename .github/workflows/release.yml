@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ jobs.build.outputs.packageName }}
+          name: ${{ needs.build.outputs.packageName }}
 
       - uses: actions/setup-node@v3
         with:
