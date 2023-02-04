@@ -39,7 +39,7 @@ permalink: /installation/
    ```json
    "dependencies": {
      ...
-     "com.arsenstudio.assimp": "4.1.0"
+     "com.arsenstudio.assimp": "4.1.1"
    }
    ...
    ```
