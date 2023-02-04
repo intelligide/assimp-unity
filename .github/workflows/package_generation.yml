@@ -66,9 +66,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: AssimpNet
-          path: |
-            assimpnet/AssimpNet/bin/Release
-            assimpnet/License.txt
+          path: assimpnet/AssimpNet/bin/Release
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: AssimpNet
+          path: assimpnet/License.txt
 
   build_assimp_win:
     name: Build Assimp for Windows
@@ -109,9 +112,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-Win-${{ matrix.BuildArch }}
-          path: |
-            ${{ runner.temp }}/bin/assimp.dll
-            assimp-${{ inputs.AssimpVersion }}/LICENSE
+          path: ${{ runner.temp }}/bin/assimp.dll
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-Win-${{ matrix.BuildArch }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_assimp_linux:
     name: Build Assimp for Linux
@@ -151,9 +157,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-Linux-${{ matrix.BuildArch }}
-          path: |
-            ${{ runner.temp }}/lib/libassimp.so
-            assimp-${{ inputs.AssimpVersion }}/LICENSE
+          path: ${{ runner.temp }}/lib/libassimp.so
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-Linux-${{ matrix.BuildArch }}
+          path:  assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_assimp_android:
     name: Build Assimp for Android
@@ -195,9 +204,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-Android-${{ matrix.AndroidABI }}
-          path: |
-            ${{ runner.temp }}/lib/libassimp.so
-            assimp-${{ inputs.AssimpVersion }}/LICENSE
+          path: ${{ runner.temp }}/lib/libassimp.so
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-Android-${{ matrix.AndroidABI }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_assimp_macos:
     name: Build Assimp for Mac OS X
@@ -234,9 +246,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-macOS-${{ matrix.BuildArch }}
-          path: |
-            ${{ runner.temp }}/lib/libassimp.dylib
-            assimp-${{ inputs.AssimpVersion }}/LICENSE
+          path: ${{ runner.temp }}/lib/libassimp.dylib
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-macOS-${{ matrix.BuildArch }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_assimp_ios:
     name: Build Assimp for iOS
@@ -268,9 +283,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-iOS-${{ matrix.BuildArch }}
-          path: |
-            assimp-${{ inputs.AssimpVersion }}/lib/iOS
-            assimp-${{ inputs.AssimpVersion }}/LICENSE
+          path: assimp-${{ inputs.AssimpVersion }}/lib/iOS
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-iOS-${{ matrix.BuildArch }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_docs:
     name: Build Docs
