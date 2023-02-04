@@ -68,6 +68,11 @@ jobs:
           name: AssimpNet
           path: assimpnet/AssimpNet/bin/Release
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: AssimpNet
+          path: assimpnet/License.txt
+
   build_assimp_win:
     name: Build Assimp for Windows
     if: inputs.buildWindows
@@ -109,6 +114,11 @@ jobs:
           name: Assimp-Win-${{ matrix.BuildArch }}
           path: ${{ runner.temp }}/bin/assimp.dll
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-Win-${{ matrix.BuildArch }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
+
   build_assimp_linux:
     name: Build Assimp for Linux
     if: inputs.buildLinux
@@ -148,6 +158,11 @@ jobs:
         with:
           name: Assimp-Linux-${{ matrix.BuildArch }}
           path: ${{ runner.temp }}/lib/libassimp.so
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-Linux-${{ matrix.BuildArch }}
+          path:  assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_assimp_android:
     name: Build Assimp for Android
@@ -191,6 +206,11 @@ jobs:
           name: Assimp-Android-${{ matrix.AndroidABI }}
           path: ${{ runner.temp }}/lib/libassimp.so
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-Android-${{ matrix.AndroidABI }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
+
   build_assimp_macos:
     name: Build Assimp for Mac OS X
     if: inputs.buildmacOS
@@ -228,6 +248,11 @@ jobs:
           name: Assimp-macOS-${{ matrix.BuildArch }}
           path: ${{ runner.temp }}/lib/libassimp.dylib
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-macOS-${{ matrix.BuildArch }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
+
   build_assimp_ios:
     name: Build Assimp for iOS
     if: inputs.buildiOS
@@ -259,6 +284,11 @@ jobs:
         with:
           name: Assimp-iOS-${{ matrix.BuildArch }}
           path: assimp-${{ inputs.AssimpVersion }}/lib/iOS
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Assimp-iOS-${{ matrix.BuildArch }}
+          path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
   build_docs:
     name: Build Docs
@@ -350,8 +380,11 @@ jobs:
       - name: Copy README
         run: cp -f README.md ${{ env.PackageFolder }}/README.md
 
-      - name: Copy License
-        run: cp -f LICENSE.md ${{ env.PackageFolder }}/LICENSE.md
+      - name: Copy Assimp License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/LICENSE ${{ env.PackageFolder }}/AssimpLicense.txt
+
+      - name: Copy AssimpNet License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/License.txt ${{ env.PackageFolder }}/AssimpNetLicense.txt
 
       - name: Delete gitkeep files
         run: find ${{ env.PackageFolder }} -name '.gitkeep' -delete
