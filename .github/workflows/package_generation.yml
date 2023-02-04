@@ -384,7 +384,7 @@ jobs:
         run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/LICENSE ${{ env.PackageFolder }}/AssimpLicense.txt
 
       - name: Copy AssimpNet License
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/LICENSE.txt ${{ env.PackageFolder }}/AssimpNetLicense.txt
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/License.txt ${{ env.PackageFolder }}/AssimpNetLicense.txt
 
       - name: Delete gitkeep files
         run: find ${{ env.PackageFolder }} -name '.gitkeep' -delete
