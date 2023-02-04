@@ -1,3 +1,5 @@
+name: Build
+
 on:
   workflow_call:
     inputs:
@@ -48,7 +50,7 @@ jobs:
         with:
           repository: 'intelligide/assimpnet-unity'
           path: 'assimpnet'
-          ref: '${{ env.AssimpNetVersion }}'
+          ref: '${{ inputs.AssimpNetVersion }}'
 
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v3
@@ -203,10 +205,10 @@ jobs:
       CXXFLAGS: -g0
       LDFLAGS: -g0 -s
     steps:
-      - name: Extract Assimp sources
+      - name: Download Assimp sources
         run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
 
-      - name: Download Assimp sources
+      - name: Extract Assimp sources
         run: unzip assimp.zip
 
       - name: Configure Assimp
