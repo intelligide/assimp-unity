@@ -29,7 +29,6 @@ on:
         type: boolean
     outputs:
       packageName:
-        description: "The first output string"
         value: ${{ inputs.packageName }}
 
 env:
