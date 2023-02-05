@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/package_generation.yml
     with:
       assimpVersion: 4.1.0
-      AssimpNetVersion: 4.1.0
+      assimpNetVersion: 4.1.0
 
   publishing:
     name: Publishing
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ needs.build.outputs.packageName }}
+          paths: packages
 
       - uses: actions/setup-node@v3
         with:
@@ -30,5 +30,36 @@ jobs:
 
       - name: Publishing package
         run: npm publish
+        working-directory: packages/com.frozenstorminteractive.assimp
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
+
+      - name: Publishing package
+        run: npm publish
+        working-directory: packages/com.frozenstorminteractive.assimp.android
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
+
+      - name: Publishing package
+        run: npm publish
+        working-directory: packages/com.frozenstorminteractive.assimp.ios
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
+
+      - name: Publishing package
+        run: npm publish
+        working-directory: packages/com.frozenstorminteractive.assimp.linux
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
+
+      - name: Publishing package
+        run: npm publish
+        working-directory: packages/com.frozenstorminteractive.assimp.macos
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
+
+      - name: Publishing package
+        run: npm publish
+        working-directory: packages/com.frozenstorminteractive.assimp.windows
         env:
           NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
