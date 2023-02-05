@@ -346,7 +346,7 @@ jobs:
         run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/License.txt packages/${{ env.PackageName }}/AssimpNetLicense.txt
 
       - name: Delete gitkeep files
-        run: find c${{ env.PackageName }} -name '.gitkeep' -delete
+        run: find ${{ env.PackageName }} -name '.gitkeep' -delete
 
       - uses: actions/upload-artifact@v3
         with:
@@ -366,13 +366,13 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: Assimp-Windows-x64
-          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Windows-x64
+          name: Assimp-Win-x64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64
 
       - uses: actions/download-artifact@v3
         with:
-          name: Assimp-Windows-x86
-          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Windows-x86
+          name: Assimp-Win-x86
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x86
 
       - name: Install Assimp for Windows x64
         if: inputs.buildWindows
@@ -552,7 +552,7 @@ jobs:
         run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/x86_64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/x64/libassimp.a
 
       - name: Copy Assimp License
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
 
       - name: Delete gitkeep files
         run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
