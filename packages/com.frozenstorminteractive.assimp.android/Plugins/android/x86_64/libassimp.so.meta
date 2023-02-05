@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: efd5323ccf84d9140a0cdfb3f48cd2ce
+guid: 9d9c8caea7c54388af5ab8080a596277
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -28,7 +28,8 @@ PluginImporter:
     second:
       enabled: 1
       settings:
-        CPU: x86
+        AndroidSharedLibraryType: Executable
+        CPU: X86_64
   - first:
       Any: 
     second:

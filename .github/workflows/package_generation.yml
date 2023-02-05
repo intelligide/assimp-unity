@@ -175,7 +175,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        AndroidABI: [armeabi-v7a, arm64-v8a, x86]
+        AndroidABI: [armeabi-v7a, arm64-v8a, x86, x86_64]
     steps:
       - name: Install Ninja
         run: sudo apt-get update -yqq && sudo apt install -y ninja-build
@@ -290,106 +290,244 @@ jobs:
           name: Assimp-iOS-${{ matrix.BuildArch }}
           path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
-  build_docs:
-    name: Build Docs
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
-          working-directory: docs
-
-      - name: Build docs with Jekyll
-        run: bundle exec jekyll build
-        working-directory: docs
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: docs
-          path: docs/_site
-
-  packaging:
-    name: Packaging
+  package_assimpnet:
+    name: Package AssimpNet
     runs-on: ubuntu-latest
     env:
       ArtifactTemporaryDir: artifacts
+      PackageName: "com.frozenstorminteractive.assimp"
     needs:
       - build_assimpnet
-      - build_assimp_win
-      - build_assimp_linux
-      - build_assimp_android
-      - build_assimp_macos
-      - build_assimp_ios
-      - build_docs
     steps:
       - uses: actions/checkout@v3
 
       - uses: actions/download-artifact@v3
         with:
-          path: ${{ env.ArtifactTemporaryDir }}
-
-      - name: Copy Docs
-        run: cp -f -R ${{ env.ArtifactTemporaryDir }}/docs ${{ env.PackageFolder }}/Documentation~
+          name: AssimpNet
+          path: ${{ env.ArtifactTemporaryDir }}/AssimpNet
 
       - name: Install AssimpNet
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/netstandard2.0/AssimpNet.dll ${{ env.PackageFolder }}/AssimpNet.dll
-
-      - name: Install Assimp for Windows x64
-        if: inputs.buildWindows
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/assimp.dll ${{ env.PackageFolder }}/Plugins/win/x86_64/assimp.dll
-
-      - name: Install Assimp for Windows x86
-        if: inputs.buildWindows
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x86/assimp.dll ${{ env.PackageFolder }}/Plugins/win/x86/assimp.dll
-
-      - name: Install Assimp for Linux x86_64
-        if: inputs.buildLinux
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Linux-x64/libassimp.so ${{ env.PackageFolder }}/Plugins/linux/x86_64/libassimp.so
-
-      - name: Install Assimp for Mac OS X x86_64
-        if: inputs.buildmacOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-macOS-x86_64/libassimp.dylib ${{ env.PackageFolder }}/Plugins/osx/x86_64/libassimp.dylib
-
-      - name: Install Assimp for Android armv7
-        if: inputs.buildAndroid
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-armeabi-v7a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/armv7/libassimp.so
-
-      - name: Install Assimp for Android arm64
-        if: inputs.buildAndroid
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-arm64-v8a/libassimp.so ${{ env.PackageFolder }}/Plugins/android/arm64/libassimp.so
-
-      - name: Install Assimp for Android x86
-        if: inputs.buildAndroid
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86/libassimp.so ${{ env.PackageFolder }}/Plugins/android/x86/libassimp.so
-
-      - name: Install Assimp for iOS armv7
-        if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-armv7/armv7/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/armv7/libassimp.a
-
-      - name: Install Assimp for iOS arm64
-        if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/arm64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/arm64/libassimp.a
-
-      - name: Install Assimp for iOS x86_64
-        if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/x86_64/libassimp.a ${{ env.PackageFolder }}/Plugins/ios/x64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/netstandard2.0/AssimpNet.dll packages/${{ env.PackageName }}/AssimpNet.dll
 
       - name: Copy README
-        run: cp -f README.md ${{ env.PackageFolder }}/README.md
-
-      - name: Copy Assimp License
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/LICENSE ${{ env.PackageFolder }}/AssimpLicense.txt
+        run: cp -f README.md packages/${{ env.PackageName }}/README.md
 
       - name: Copy AssimpNet License
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/License.txt ${{ env.PackageFolder }}/AssimpNetLicense.txt
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/License.txt packages/${{ env.PackageName }}/AssimpNetLicense.txt
 
       - name: Delete gitkeep files
-        run: find ${{ env.PackageFolder }} -name '.gitkeep' -delete
+        run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
 
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.packageName }}
-          path: ${{ env.PackageFolder }}
+          name: ${{ env.PackageName }}
+          path: packages/${{ env.PackageName }}
+
+  package_win:
+    name: Package for Windows
+    runs-on: ubuntu-latest
+    env:
+      ArtifactTemporaryDir: artifacts
+      PackageName: "com.frozenstorminteractive.assimp.windows"
+    needs:
+      - build_assimp_win
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Win-x64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Win-x86
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x86
+
+      - name: Install Assimp for Windows x64
+        if: inputs.buildWindows
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/assimp.dll packages/${{ env.PackageName }}/Plugins/win/x86_64/assimp.dll
+
+      - name: Install Assimp for Windows x86
+        if: inputs.buildWindows
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x86/assimp.dll packages/${{ env.PackageName }}/Plugins/win/x86/assimp.dll
+
+      - name: Copy Assimp License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Win-x64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
+
+      - name: Delete gitkeep files
+        run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PackageName }}
+          path: packages/${{ env.PackageName }}
+
+  package_linux:
+    name: Package for Linux
+    runs-on: ubuntu-latest
+    env:
+      ArtifactTemporaryDir: artifacts
+      PackageName: "com.frozenstorminteractive.assimp.linux"
+    needs:
+      - build_assimp_linux
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Linux-x64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Linux-x64
+
+      - name: Install Assimp for Linux x86_64
+        if: inputs.buildLinux
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Linux-x64/libassimp.so packages/${{ env.PackageName }}/Plugins/linux/x86_64/libassimp.so
+
+      - name: Copy Assimp License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Linux-x64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
+
+      - name: Delete gitkeep files
+        run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PackageName }}
+          path: packages/${{ env.PackageName }}
+
+  package_android:
+    name: Package for Android
+    runs-on: ubuntu-latest
+    env:
+      ArtifactTemporaryDir: artifacts
+      PackageName: "com.frozenstorminteractive.assimp.android"
+    needs:
+      - build_assimp_android
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Android-arm64-v8a
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Android-arm64-v8a
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Android-armeabi-v7a
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Android-armeabi-v7a
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Android-x86
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-Android-x86_64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86_64
+
+      - name: Install Assimp for Android armv7
+        if: inputs.buildAndroid
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-armeabi-v7a/libassimp.so packages/${{ env.PackageName }}/Plugins/android/armv7/libassimp.so
+
+      - name: Install Assimp for Android arm64
+        if: inputs.buildAndroid
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-arm64-v8a/libassimp.so packages/${{ env.PackageName }}/Plugins/android/arm64/libassimp.so
+
+      - name: Install Assimp for Android x86
+        if: inputs.buildAndroid
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86/libassimp.so packages/${{ env.PackageName }}/Plugins/android/x86/libassimp.so
+
+      - name: Install Assimp for Android x86_64
+        if: inputs.buildAndroid
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86_64/libassimp.so packages/${{ env.PackageName }}/Plugins/android/x86_64/libassimp.so
+
+      - name: Copy Assimp License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-Android-x86/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
+
+      - name: Delete gitkeep files
+        run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PackageName }}
+          path: packages/${{ env.PackageName }}
+
+  package_macos:
+    name: Package for macOS
+    runs-on: ubuntu-latest
+    env:
+      ArtifactTemporaryDir: artifacts
+      PackageName: "com.frozenstorminteractive.assimp.macos"
+    needs:
+      - build_assimp_macos
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-macOS-x86_64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-macOS-x86_64
+
+      - name: Install Assimp for Mac OS X x86_64
+        if: inputs.buildmacOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-macOS-x86_64/libassimp.dylib packages/${{ env.PackageName }}/Plugins/osx/x86_64/libassimp.dylib
+
+      - name: Copy Assimp License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-macOS-x86_64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
+
+      - name: Delete gitkeep files
+        run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PackageName }}
+          path: packages/${{ env.PackageName }}
+
+  package_ios:
+    name: Package for iOS
+    runs-on: ubuntu-latest
+    env:
+      ArtifactTemporaryDir: artifacts
+      PackageName: "com.frozenstorminteractive.assimp.ios"
+    needs:
+      - build_assimp_ios
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-iOS-arm64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64
+
+      - uses: actions/download-artifact@v3
+        with:
+          name:  Assimp-iOS-armv7
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-armv7
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Assimp-iOS-x86_64
+          path: ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64
+
+      - name: Install Assimp for iOS armv7
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-armv7/armv7/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/armv7/libassimp.a
+
+      - name: Install Assimp for iOS arm64
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/arm64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libassimp.a
+
+      - name: Install Assimp for iOS x86_64
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/x86_64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/x64/libassimp.a
+
+      - name: Copy Assimp License
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
+
+      - name: Delete gitkeep files
+        run: find packages/${{ env.PackageName }} -name '.gitkeep' -delete
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PackageName }}
+          path: packages/${{ env.PackageName }}
