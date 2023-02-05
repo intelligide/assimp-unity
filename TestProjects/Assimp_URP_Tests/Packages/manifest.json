@@ -1,6 +1,11 @@
 {
   "dependencies": {
-    "com.arsenstudio.assimp": "file:../../../packages/com.arsenstudio.assimp",
+    "com.frozenstorminteractive.assimp": "file:../../../packages/com.frozenstorminteractive.assimp",
+    "com.frozenstorminteractive.assimp.android": "file:../../../packages/com.frozenstorminteractive.assimp.android",
+    "com.frozenstorminteractive.assimp.ios": "file:../../../packages/com.frozenstorminteractive.assimp.ios",
+    "com.frozenstorminteractive.assimp.linux": "file:../../../packages/com.frozenstorminteractive.assimp.linux",
+    "com.frozenstorminteractive.assimp.macos": "file:../../../packages/com.frozenstorminteractive.assimp.macos",
+    "com.frozenstorminteractive.assimp.windows": "file:../../../packages/com.frozenstorminteractive.assimp.windows",
     "com.unity.collab-proxy": "2.0.0",
     "com.unity.ide.rider": "3.0.18",
     "com.unity.ide.visualstudio": "2.0.17",
@@ -9,6 +14,7 @@
     "com.unity.test-framework": "1.1.33",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.2",
+    "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.4",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.8.0",
     "com.unity.modules.ai": "1.0.0",

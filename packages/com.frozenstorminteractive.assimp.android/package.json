@@ -1,10 +1,9 @@
 {
-  "name": "com.arsenstudio.assimp",
-  "version": "4.1.1",
-  "displayName": "AssimpNet",
+  "name": "com.frozenstorminteractive.assimp.android",
+  "version": "4.1.0",
+  "displayName": "Assimp - Android",
   "unity": "2018.1",
   "description": "Assimp for C#/Unity",
-  "type": "library",
   "keywords": ["assimp", "mesh importer"],
   "author": {
     "name": "Yoann Potinet"

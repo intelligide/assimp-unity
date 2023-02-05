@@ -1,0 +1,12 @@
+{
+  "name": "com.frozenstorminteractive.assimp",
+  "version": "4.1.0",
+  "displayName": "Assimp",
+  "unity": "2018.1",
+  "description": "Assimp for C#/Unity",
+  "keywords": ["assimp", "mesh importer"],
+  "author": {
+    "name": "Yoann Potinet"
+  },
+  "dependencies": {}
+}
