@@ -24,9 +24,9 @@ permalink: /installation/
    "scopedRegistries": [
      {
        "name": "Assimp",
-       "url": "https://intelligide.pkgs.visualstudio.com/0435f2bc-ce0a-4490-ac97-883fb250890d/_packaging/stable/npm/registry/",
+       "url": "https://upm.frozenstorminteractive.com/",
        "scopes": [
-         "com.arsenstudio.assimp"
+         "com.frozenstorminteractive"
        ]
      }
      ...
@@ -39,7 +39,9 @@ permalink: /installation/
    ```json
    "dependencies": {
      ...
-     "com.arsenstudio.assimp": "4.1.1"
+     "com.frozenstorminteractive.assimp": "4.1.0",
+     "com.frozenstorminteractive.assimp.windows": "4.1.0",
+     "com.frozenstorminteractive.assimp.linux": "4.1.0",
    }
    ...
    ```
