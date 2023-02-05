@@ -5,8 +5,11 @@
   "unity": "2018.1",
   "description": "Assimp for C#/Unity",
   "keywords": ["assimp", "mesh importer"],
+  "documentationUrl": "https://intelligide.github.io/assimp-unity/",
   "author": {
-    "name": "Yoann Potinet"
+    "name" : "Frozen Storm Interactive",
+    "email" : "upm@frozenstorminteractive.com",
+    "url" : "https://www.frozenstorminteractive.com"
   },
   "dependencies": {}
 }

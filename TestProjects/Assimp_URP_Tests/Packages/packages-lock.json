@@ -10,31 +10,41 @@
       "version": "file:../../../packages/com.frozenstorminteractive.assimp.android",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.frozenstorminteractive.assimp": "4.1.0"
+      }
     },
     "com.frozenstorminteractive.assimp.ios": {
       "version": "file:../../../packages/com.frozenstorminteractive.assimp.ios",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.frozenstorminteractive.assimp": "4.1.0"
+      }
     },
     "com.frozenstorminteractive.assimp.linux": {
       "version": "file:../../../packages/com.frozenstorminteractive.assimp.linux",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.frozenstorminteractive.assimp": "4.1.0"
+      }
     },
     "com.frozenstorminteractive.assimp.macos": {
       "version": "file:../../../packages/com.frozenstorminteractive.assimp.macos",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.frozenstorminteractive.assimp": "4.1.0"
+      }
     },
     "com.frozenstorminteractive.assimp.windows": {
       "version": "file:../../../packages/com.frozenstorminteractive.assimp.windows",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.frozenstorminteractive.assimp": "4.1.0"
+      }
     },
     "com.unity.burst": {
       "version": "1.8.2",
