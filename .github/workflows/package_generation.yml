@@ -290,27 +290,6 @@ jobs:
           name: Assimp-iOS-${{ matrix.BuildArch }}
           path: assimp-${{ inputs.AssimpVersion }}/LICENSE
 
-  build_docs:
-    name: Build Docs
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
-          working-directory: docs
-
-      - name: Build docs with Jekyll
-        run: bundle exec jekyll build
-        working-directory: docs
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: docs
-          path: docs/_site
-
   package_assimpnet:
     name: Package AssimpNet
     runs-on: ubuntu-latest
@@ -319,7 +298,6 @@ jobs:
       PackageName: "com.frozenstorminteractive.assimp"
     needs:
       - build_assimpnet
-      - build_docs
     steps:
       - uses: actions/checkout@v3
 
@@ -327,14 +305,6 @@ jobs:
         with:
           name: AssimpNet
           path: ${{ env.ArtifactTemporaryDir }}/AssimpNet
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: docs
-          path: ${{ env.ArtifactTemporaryDir }}/docs
-
-      - name: Copy Docs
-        run: cp -f -R ${{ env.ArtifactTemporaryDir }}/docs packages/${{ env.PackageName }}/Documentation~
 
       - name: Install AssimpNet
         run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/netstandard2.0/AssimpNet.dll packages/${{ env.PackageName }}/AssimpNet.dll
