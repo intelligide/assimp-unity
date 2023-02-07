@@ -12,8 +12,8 @@ jobs:
       assimpVersion: 4.1.0
       assimpNetVersion: 4.1.0
 
-  publishing:
-    name: Publishing
+  publishing_in_registry:
+    name: Publishing in registry
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -63,3 +63,30 @@ jobs:
         working-directory: packages/com.frozenstorminteractive.assimp.windows
         env:
           NODE_AUTH_TOKEN: ${{ secrets.FSI_REGISTRY_TOKEN }}
+
+  upload_release_artifacts:
+    name: Upload artifacts in Github Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          paths: packages
+
+      - run: tar -czvf com.frozenstorminteractive.assimp.tar.gz packages/com.frozenstorminteractive.assimp
+      - run: tar -czvf com.frozenstorminteractive.assimp.android.tar.gz packages/com.frozenstorminteractive.assimp.android
+      - run: tar -czvf com.frozenstorminteractive.assimp.ios.tar.gz packages/packages/com.frozenstorminteractive.assimp.ios
+      - run: tar -czvf com.frozenstorminteractive.assimp.linux.tar.gz packages/com.frozenstorminteractive.assimp.linux
+      - run: tar -czvf com.frozenstorminteractive.assimp.macos.tar.gz packages/com.frozenstorminteractive.assimp.macos
+      - run: tar -czvf com.frozenstorminteractive.assimp.windows.tar.gz packages/com.frozenstorminteractive.assimp.windows
+
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            com.frozenstorminteractive.assimp.tar.gz
+            com.frozenstorminteractive.assimp.android.tar.gz
+            com.frozenstorminteractive.assimp.ios.tar.gz
+            com.frozenstorminteractive.assimp.linux.tar.gz
+            com.frozenstorminteractive.assimp.macos.tar.gz
+            com.frozenstorminteractive.assimp.windows.tar.gz
