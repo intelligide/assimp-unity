@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          paths: packages
+          path: packages
 
       - uses: actions/setup-node@v3
         with:
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          paths: packages
+          path: packages
 
       - run: tar -czvf com.frozenstorminteractive.assimp.tar.gz packages/com.frozenstorminteractive.assimp
       - run: tar -czvf com.frozenstorminteractive.assimp.android.tar.gz packages/com.frozenstorminteractive.assimp.android
