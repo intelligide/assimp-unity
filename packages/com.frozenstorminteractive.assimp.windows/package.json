@@ -1,6 +1,6 @@
 {
   "name": "com.frozenstorminteractive.assimp.windows",
-  "version": "4.1.0",
+  "version": "4.1.0-pre.1",
   "displayName": "Assimp - Windows",
   "unity": "2018.1",
   "description": "Assimp for Unity",
@@ -22,6 +22,6 @@
     "url" : "https://www.frozenstorminteractive.com"
   },
   "dependencies": {
-    "com.frozenstorminteractive.assimp": "4.1.0"
+    "com.frozenstorminteractive.assimp": "4.1.0-pre.1"
   }
 }
