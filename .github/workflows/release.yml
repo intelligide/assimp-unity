@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/package_generation.yml
     with:
       assimpVersion: 4.1.0
-      assimpNetVersion: 4.1.0
+      assimpNetVersion: 4.1.1
 
   publishing_in_registry:
     name: Publishing in registry
