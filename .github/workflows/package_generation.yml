@@ -31,9 +31,6 @@ on:
       packageName:
         value: ${{ inputs.packageName }}
 
-env:
-  PackageFolder: "packages/com.arsenstudio.assimp"
-
 jobs:
   build_assimpnet:
     name: Build AssimpNet
@@ -315,10 +312,10 @@ jobs:
           path: ${{ env.ArtifactTemporaryDir }}/AssimpNet
 
       - name: Install AssimpNet
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/Builds/Shared/AssimpNet.dll packages/${{ env.PackageName }}/AssimpNet.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/Shared/AssimpNet.dll packages/${{ env.PackageName }}/AssimpNet.dll
 
       - name: Install AssimpNet Static
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/Builds/Static/AssimpNet.Static.dll packages/${{ env.PackageName }}/AssimpNet.Static.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/Static/AssimpNet.Static.dll packages/${{ env.PackageName }}/AssimpNet.Static.dll
 
       - name: Copy README
         run: cp -f README.md packages/${{ env.PackageName }}/README.md
