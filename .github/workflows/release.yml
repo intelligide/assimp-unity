@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/package_generation.yml
     with:
       assimpVersion: 4.1.0
-      assimpNetVersion: 4.1.0
+      assimpNetVersion: 4.1.1
 
   publishing_in_registry:
     name: Publishing in registry
@@ -75,7 +75,7 @@ jobs:
 
       - run: tar -czvf com.frozenstorminteractive.assimp.tar.gz packages/com.frozenstorminteractive.assimp
       - run: tar -czvf com.frozenstorminteractive.assimp.android.tar.gz packages/com.frozenstorminteractive.assimp.android
-      - run: tar -czvf com.frozenstorminteractive.assimp.ios.tar.gz packages/packages/com.frozenstorminteractive.assimp.ios
+      - run: tar -czvf com.frozenstorminteractive.assimp.ios.tar.gz packages/com.frozenstorminteractive.assimp.ios
       - run: tar -czvf com.frozenstorminteractive.assimp.linux.tar.gz packages/com.frozenstorminteractive.assimp.linux
       - run: tar -czvf com.frozenstorminteractive.assimp.macos.tar.gz packages/com.frozenstorminteractive.assimp.macos
       - run: tar -czvf com.frozenstorminteractive.assimp.windows.tar.gz packages/com.frozenstorminteractive.assimp.windows

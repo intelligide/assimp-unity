@@ -1,6 +1,6 @@
 {
   "name": "com.frozenstorminteractive.assimp.ios",
-  "version": "4.1.0-pre.1",
+  "version": "4.1.0-pre.2",
   "displayName": "Assimp - iOS",
   "unity": "2018.1",
   "description": "Assimp binaries for iOS",
@@ -16,12 +16,13 @@
     "mesh"
   ],
   "documentationUrl": "https://intelligide.github.io/assimp-unity/",
+  "licensesUrl": "https://github.com/assimp/assimp/blob/v4.1.0/LICENSE",
   "author": {
     "name" : "Frozen Storm Interactive",
     "email" : "upm@frozenstorminteractive.com",
     "url" : "https://www.frozenstorminteractive.com"
   },
   "dependencies": {
-    "com.frozenstorminteractive.assimp": "4.1.0-pre.1"
+    "com.frozenstorminteractive.assimp": "4.1.0-pre.2"
   }
 }

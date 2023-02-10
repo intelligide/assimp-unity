@@ -31,9 +31,6 @@ on:
       packageName:
         value: ${{ inputs.packageName }}
 
-env:
-  PackageFolder: "packages/com.arsenstudio.assimp"
-
 jobs:
   build_assimpnet:
     name: Build AssimpNet
@@ -58,15 +55,23 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       - name: Restore solution
-        run: nuget restore assimpnet/AssimpNet.sln
+        run: nuget restore assimpnet/AssimpNet/AssimpNet.csproj
 
-      - name: Build app for release
-        run: msbuild assimpnet/AssimpNet.sln -property:Configuration="${{ env.BuildConfiguration }}" -property:Platform="${{ env.BuildPlatform }}"
+      - name: Build AssimpNet
+        run: msbuild assimpnet/AssimpNet/AssimpNet.csproj -p:Configuration="${{ env.BuildConfiguration }}"
+          -p:Platform="${{ env.BuildPlatform }}" -p:TargetFrameworks="netstandard2.0" -p:OutputPath="Builds/Shared"
+
+      - name: Build AssimpNet for static linking
+        run: msbuild assimpnet/AssimpNet/AssimpNet.csproj -p:Configuration="${{ env.BuildConfiguration }}"
+          -p:Platform="${{ env.BuildPlatform }}" -p:TargetFrameworks="netstandard2.0" -p:OutputPath="Builds/Static"
+          -p:StaticNativeLinking=true -p:AssemblyName="AssimpNet.Static"
 
       - uses: actions/upload-artifact@v3
         with:
           name: AssimpNet
-          path: assimpnet/AssimpNet/bin/Release
+          path: |
+            assimpnet/AssimpNet/Builds/Shared
+            assimpnet/AssimpNet/Builds/Static
 
       - uses: actions/upload-artifact@v3
         with:
@@ -307,7 +312,10 @@ jobs:
           path: ${{ env.ArtifactTemporaryDir }}/AssimpNet
 
       - name: Install AssimpNet
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/netstandard2.0/AssimpNet.dll packages/${{ env.PackageName }}/AssimpNet.dll
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/Shared/AssimpNet.dll packages/${{ env.PackageName }}/AssimpNet.dll
+
+      - name: Install AssimpNet Static
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/AssimpNet/Static/AssimpNet.Static.dll packages/${{ env.PackageName }}/AssimpNet.Static.dll
 
       - name: Copy README
         run: cp -f README.md packages/${{ env.PackageName }}/README.md
