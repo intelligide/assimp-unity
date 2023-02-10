@@ -1,6 +1,6 @@
 {
   "name": "com.frozenstorminteractive.assimp.linux",
-  "version": "4.1.0-pre.1",
+  "version": "4.1.0-pre.2",
   "displayName": "Assimp - Linux",
   "unity": "2018.1",
   "description": "Assimp binaries for Linux",
@@ -23,6 +23,6 @@
     "url" : "https://www.frozenstorminteractive.com"
   },
   "dependencies": {
-    "com.frozenstorminteractive.assimp": "4.1.0-pre.1"
+    "com.frozenstorminteractive.assimp": "4.1.0-pre.2"
   }
 }
