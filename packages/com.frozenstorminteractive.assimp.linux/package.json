@@ -16,6 +16,7 @@
     "mesh"
   ],
   "documentationUrl": "https://intelligide.github.io/assimp-unity/",
+  "licensesUrl": "https://github.com/assimp/assimp/blob/v4.1.0/LICENSE",
   "author": {
     "name" : "Frozen Storm Interactive",
     "email" : "upm@frozenstorminteractive.com",
