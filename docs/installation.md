@@ -34,14 +34,15 @@ permalink: /installation/
    ...
    ```
 
-2. Add the dependency:
+2. Add the dependency:  
+(Please check https://upm.frozenstorminteractive.com/ for available versions of assimp.* packages)
 
    ```json
    "dependencies": {
      ...
-     "com.frozenstorminteractive.assimp": "4.1.0",
-     "com.frozenstorminteractive.assimp.windows": "4.1.0",
-     "com.frozenstorminteractive.assimp.linux": "4.1.0",
+     "com.frozenstorminteractive.assimp": "4.1.0-pre.2",
+     "com.frozenstorminteractive.assimp.windows": "4.1.0-pre.2",
+     "com.frozenstorminteractive.assimp.linux": "4.1.0-pre.2",
    }
    ...
    ```
