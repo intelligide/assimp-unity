@@ -1,4 +1,4 @@
-# Assimp for C# / Unity
+# Assimp for Unity
 
 [![Build Status](https://dev.azure.com/intelligide/Assimp%20for%20Unity/_apis/build/status/intelligide.assimp-unity?branchName=master)](https://dev.azure.com/intelligide/Assimp%20for%20Unity/_build/latest?definitionId=3&branchName=master)
 

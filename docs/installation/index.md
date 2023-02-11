@@ -69,7 +69,8 @@ When the progress bar finishes, the new package is ready to use.
      ...
    ```
 
-   {% include note.html content="You can see the available versions from [the registry](https://upm.frozenstorminteractive.com/-/web/detail/com.frozenstorminteractive.assimp) or [Github Releases](https://github.com/intelligide/assimp-unity/releases)." %}
+   {: .note }
+   You can see the available versions from [the registry](https://upm.frozenstorminteractive.com/-/web/detail/com.frozenstorminteractive.assimp) or [Github Releases](https://github.com/intelligide/assimp-unity/releases).
 
 1. Let Unity fetch the package
 
