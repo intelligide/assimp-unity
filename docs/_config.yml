@@ -13,11 +13,11 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: AssimpNet for Unity
+title: Assimp for Unity
 
 permalink: pretty
 theme: just-the-docs
-#remote_theme: just-the-docs/just-the-docs@v0.3.3
+#remote_theme: just-the-docs/just-the-docs@v0.4.0
 
 search_enabled: true
 
@@ -38,3 +38,11 @@ baseurl: assimp-unity
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+callouts:
+  warning:
+    title: Warning
+    color: yellow
+  note:
+    title: Note
+    color: blue

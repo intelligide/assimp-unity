@@ -17,7 +17,8 @@ nav_order: 3
 
 *WIP*
 
-{% include warning.html content="Assimp for C# / Unity is based on [AssimpNet](https://bitbucket.org/Starnick/assimpnet/). This project does not offer full support for AssimpNet and we will never offer it. This page is therefore incomplete and serves as a starting point for using AssimpNet. We encourage you to read official [AssimpNet](https://bitbucket.org/Starnick/assimpnet/) Documentation." %}
+{: .warning }
+Assimp for Unity is based on [AssimpNet](https://bitbucket.org/Starnick/assimpnet/). This project does not offer full support for AssimpNet and we will never offer it. This page is therefore incomplete and serves as a starting point for using AssimpNet. We encourage you to read official [AssimpNet](https://bitbucket.org/Starnick/assimpnet/) Documentation.
 
 All AssimpNet classes are located on `Assimp` namespace:
 ```
@@ -61,9 +62,11 @@ Stream stream = File.Open("mymodel.fbx", FileMode.Open);
 Scene scene = importer.ImportFileFromStream(stream);
 ```
 
-{% include note.html content="You can also pass PostProcessSteps options in the second parameter." %}
+{: .note }
+You can also pass PostProcessSteps options in the second parameter.
 
-{% include warning.html content="Assimp will try to detect what importer to use from the data which may or may not be successful. You can pass optional format extension as last parameter to serve as a hint to Assimp to choose which importer to use" %}
+{: .warning }
+Assimp will try to detect what importer to use from the data which may or may not be successful. You can pass optional format extension as last parameter to serve as a hint to Assimp to choose which importer to use
 
 ### Access Scene components
 
