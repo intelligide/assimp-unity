@@ -533,11 +533,11 @@ jobs:
 
       - name: Install Assimp for iOS x86_64
         if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/libIrrXML.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libIrrXML.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/libIrrXML.a packages/${{ env.PackageName }}/Plugins/ios/x64/libIrrXML.a
 
       - name: Install Assimp for iOS x86_64
         if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/libzlibstatic.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libzlibstatic.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/libzlibstatic.a packages/${{ env.PackageName }}/Plugins/ios/x64/libzlibstatic.a
 
       - name: Copy Assimp License
         run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
