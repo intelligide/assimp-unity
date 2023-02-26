@@ -288,7 +288,10 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Assimp-iOS-${{ matrix.BuildArch }}
-          path: assimp-${{ inputs.AssimpVersion }}/lib/iOS
+          path: |
+            assimp-${{ inputs.AssimpVersion }}/lib/iOS/${{ matrix.BuildArch }}/libassimp.a
+            assimp-${{ inputs.AssimpVersion }}/lib/libIrrXML.a
+            assimp-${{ inputs.AssimpVersion }}/lib/libzlibstatic.a
 
       - uses: actions/upload-artifact@v3
         with:
@@ -514,11 +517,27 @@ jobs:
 
       - name: Install Assimp for iOS arm64
         if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/arm64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/iOS/arm64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libassimp.a
+
+      - name: Install Assimp for iOS arm64
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/libIrrXML.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libIrrXML.a
+
+      - name: Install Assimp for iOS arm64
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-arm64/libzlibstatic.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libzlibstatic.a
 
       - name: Install Assimp for iOS x86_64
         if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/x86_64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/x64/libassimp.a
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/iOS/x86_64/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/x64/libassimp.a
+
+      - name: Install Assimp for iOS x86_64
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/libIrrXML.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libIrrXML.a
+
+      - name: Install Assimp for iOS x86_64
+        if: inputs.buildiOS
+        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/libzlibstatic.a packages/${{ env.PackageName }}/Plugins/ios/arm64/libzlibstatic.a
 
       - name: Copy Assimp License
         run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64/LICENSE packages/${{ env.PackageName }}/AssimpLicense.txt
