@@ -269,7 +269,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        BuildArch: [armv7, arm64, x86_64]
+        BuildArch: [arm64, x86_64]
     steps:
       - name: Download Assimp sources
         run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
@@ -509,17 +509,8 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name:  Assimp-iOS-armv7
-          path: ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-armv7
-
-      - uses: actions/download-artifact@v3
-        with:
           name: Assimp-iOS-x86_64
           path: ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-x86_64
-
-      - name: Install Assimp for iOS armv7
-        if: inputs.buildiOS
-        run: cp -f ${{ env.ArtifactTemporaryDir }}/Assimp-iOS-armv7/armv7/libassimp.a packages/${{ env.PackageName }}/Plugins/ios/armv7/libassimp.a
 
       - name: Install Assimp for iOS arm64
         if: inputs.buildiOS
