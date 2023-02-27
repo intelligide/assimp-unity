@@ -271,11 +271,19 @@ jobs:
       matrix:
         BuildArch: [arm64, x86_64]
     steps:
+      - uses: actions/checkout@v3
+        with:
+          path: assimp-unity
+
       - name: Download Assimp sources
         run: curl -L https://github.com/assimp/assimp/archive/v${{ inputs.AssimpVersion }}.zip -o assimp.zip
 
       - name: Extract Assimp sources
         run: unzip assimp.zip
+
+      - name: Apply patches
+        run: patch -Np1 < ${{ github.workspace }}/assimp-unity/patches/4.1.0/iOS/0001-enable-bitcode.patch
+        working-directory: assimp-${{ inputs.AssimpVersion }}
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
