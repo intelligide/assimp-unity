@@ -35,3 +35,4 @@ packages/**/*.dll
 packages/**/*.so
 packages/**/*.a
 packages/**/*.dylib
+diffs/
