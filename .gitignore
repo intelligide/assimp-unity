@@ -4,8 +4,6 @@
 [Ll]ibrary/
 [Oo]bj/
 [Tt]emp/
-[Ss]treaming[Aa]ssets/
-[Ss]treaming[Aa]ssets.meta
 [Aa]ctual[Ii]mages/
 [Aa]ctual[Ii]mages.meta
 [Ll]og/
@@ -37,3 +35,4 @@ packages/**/*.dll
 packages/**/*.so
 packages/**/*.a
 packages/**/*.dylib
+diffs/

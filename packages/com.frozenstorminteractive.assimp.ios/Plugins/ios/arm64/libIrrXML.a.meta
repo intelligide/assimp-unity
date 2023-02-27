@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cd6ba7dc88ec36e4691eb4a10b14c3d0
+guid: 2ffc8207779fd499ea2013df2b969504
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -16,19 +16,12 @@ PluginImporter:
     second:
       enabled: 0
       settings:
-        Exclude Android: 1
-        Exclude Editor: 0
+        Exclude Editor: 1
         Exclude Linux64: 1
-        Exclude OSXUniversal: 0
+        Exclude OSXUniversal: 1
         Exclude Win: 1
         Exclude Win64: 1
-        Exclude iOS: 1
-  - first:
-      Android: Android
-    second:
-      enabled: 0
-      settings:
-        CPU: ARMv7
+        Exclude iOS: 0
   - first:
       Any: 
     second:
@@ -37,54 +30,42 @@ PluginImporter:
   - first:
       Editor: Editor
     second:
-      enabled: 1
+      enabled: 0
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
-        OS: OSX
-  - first:
-      Facebook: Win
-    second:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
-  - first:
-      Facebook: Win64
-    second:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
+        OS: AnyOS
   - first:
       Standalone: Linux64
     second:
       enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
   - first:
       Standalone: OSXUniversal
     second:
-      enabled: 1
+      enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
   - first:
       Standalone: Win
     second:
       enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
   - first:
       Standalone: Win64
     second:
       enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
   - first:
       iPhone: iOS
     second:
-      enabled: 0
+      enabled: 1
       settings:
         AddToEmbeddedBinaries: false
-        CPU: AnyCPU
+        CPU: ARM64
         CompileFlags: 
         FrameworkDependencies: 
   userData: 
