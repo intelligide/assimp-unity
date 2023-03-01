@@ -40,9 +40,9 @@ permalink: /installation/
    ```json
    "dependencies": {
      ...
-     "com.frozenstorminteractive.assimp": "4.1.0-pre.2",
-     "com.frozenstorminteractive.assimp.windows": "4.1.0-pre.2",
-     "com.frozenstorminteractive.assimp.linux": "4.1.0-pre.2",
+     "com.frozenstorminteractive.assimp": "4.1.0",
+     "com.frozenstorminteractive.assimp.windows": "4.1.0",
+     "com.frozenstorminteractive.assimp.linux": "4.1.0",
    }
    ...
    ```
