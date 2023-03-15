@@ -237,7 +237,8 @@ jobs:
 
       - name: Configure Assimp
         run: cmake -G "Unix Makefiles" -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel -DASSIMP_BUILD_TESTS=OFF
-            -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+            -DCMAKE_INSTALL_PREFIX=${{ runner.temp }}
         working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Build Assimp
