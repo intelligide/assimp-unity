@@ -73,12 +73,12 @@ jobs:
         with:
           path: packages
 
-      - run: tar -czvf com.frozenstorminteractive.assimp.tar.gz packages/com.frozenstorminteractive.assimp
-      - run: tar -czvf com.frozenstorminteractive.assimp.android.tar.gz packages/com.frozenstorminteractive.assimp.android
-      - run: tar -czvf com.frozenstorminteractive.assimp.ios.tar.gz packages/com.frozenstorminteractive.assimp.ios
-      - run: tar -czvf com.frozenstorminteractive.assimp.linux.tar.gz packages/com.frozenstorminteractive.assimp.linux
-      - run: tar -czvf com.frozenstorminteractive.assimp.macos.tar.gz packages/com.frozenstorminteractive.assimp.macos
-      - run: tar -czvf com.frozenstorminteractive.assimp.windows.tar.gz packages/com.frozenstorminteractive.assimp.windows
+      - run: tar -C packages/com.frozenstorminteractive.assimp -czvf com.frozenstorminteractive.assimp.tar.gz . --transform s/^./package/
+      - run: tar -C packages/com.frozenstorminteractive.assimp.android -czvf com.frozenstorminteractive.assimp.android.tar.gz . --transform s/^./package/
+      - run: tar -C packages/com.frozenstorminteractive.assimp.ios -czvf com.frozenstorminteractive.assimp.ios.tar.gz . --transform s/^./package/
+      - run: tar -C packages/com.frozenstorminteractive.assimp.linux -czvf com.frozenstorminteractive.assimp.linux.tar.gz . --transform s/^./package/
+      - run: tar -C packages/com.frozenstorminteractive.assimp.macos -czvf com.frozenstorminteractive.assimp.macos.tar.gz . --transform s/^./package/
+      - run: tar -C packages/com.frozenstorminteractive.assimp.windows -czvf com.frozenstorminteractive.assimp.windows.tar.gz . --transform s/^./package/
 
       - name: Upload artifacts
         uses: softprops/action-gh-release@v1

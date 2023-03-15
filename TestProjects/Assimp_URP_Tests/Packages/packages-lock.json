@@ -11,7 +11,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.frozenstorminteractive.assimp": "4.1.0-pre.3"
+        "com.frozenstorminteractive.assimp": "4.1.0-pre.4"
       }
     },
     "com.frozenstorminteractive.assimp.ios": {
@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.frozenstorminteractive.assimp": "4.1.0-pre.3"
+        "com.frozenstorminteractive.assimp": "4.1.0-pre.4"
       }
     },
     "com.frozenstorminteractive.assimp.linux": {
@@ -27,7 +27,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.frozenstorminteractive.assimp": "4.1.0-pre.3"
+        "com.frozenstorminteractive.assimp": "4.1.0-pre.4"
       }
     },
     "com.frozenstorminteractive.assimp.macos": {
@@ -35,7 +35,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.frozenstorminteractive.assimp": "4.1.0-pre.3"
+        "com.frozenstorminteractive.assimp": "4.1.0-pre.4"
       }
     },
     "com.frozenstorminteractive.assimp.windows": {
@@ -43,7 +43,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.frozenstorminteractive.assimp": "4.1.0-pre.3"
+        "com.frozenstorminteractive.assimp": "4.1.0-pre.4"
       }
     },
     "com.unity.burst": {
