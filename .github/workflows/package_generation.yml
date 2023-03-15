@@ -242,11 +242,11 @@ jobs:
         working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Build Assimp
-        run: cmake --build . --config MinSizeRel
+        run: cmake --build . --config MinSizeRel -j 4
         working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - name: Install Assimp
-        run: cmake --build . --target install/strip --config MinSizeRel
+        run: cmake --build . --target install/strip --config MinSizeRel -j 4
         working-directory : assimp-${{ inputs.AssimpVersion }}
 
       - uses: actions/upload-artifact@v3
