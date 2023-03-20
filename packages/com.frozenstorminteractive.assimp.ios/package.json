@@ -1,6 +1,6 @@
 {
   "name": "com.frozenstorminteractive.assimp.ios",
-  "version": "4.1.0-pre.4",
+  "version": "4.1.0",
   "displayName": "Assimp - iOS",
   "unity": "2018.1",
   "description": "Assimp binaries for iOS",
@@ -23,6 +23,6 @@
     "url" : "https://www.frozenstorminteractive.com"
   },
   "dependencies": {
-    "com.frozenstorminteractive.assimp": "4.1.0-pre.4"
+    "com.frozenstorminteractive.assimp": "4.1.0"
   }
 }
